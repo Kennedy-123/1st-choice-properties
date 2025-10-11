@@ -1,103 +1,261 @@
+"use client";
 import Image from "next/image";
+import banner2 from "./image/banner2.jpg";
+import banner3 from "./image/banner3.webp";
+import banner4 from "./image/banner4.avif";
+import Hero from "@/components/Hero";
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <main className="min-h-screen bg-white text-gray-800">
+      {/* Hero */}
+      <Hero />
+      {/* Discover all things property */}
+      <section className="max-w-6xl mx-auto px-6 py-12">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-semibold">
+            Discover all things property
+          </h2>
+          <div className="mt-4 inline-flex gap-6 text-sm text-gray-500">
+            <button className="pb-2 text-gray-400">Renting</button>
+            <button className="pb-2 text-gray-400">Selling</button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        <div className="bg-white rounded-xl shadow p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="p-6">
+              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+                <Image src="/file.svg" alt="alerts" width={40} height={40} />
+              </div>
+              <h3 className="text-lg font-medium text-center mt-4">
+                Property Alerts
+              </h3>
+              <p className="text-sm text-gray-600 mt-2 text-center">
+                Sign up for an account and receive property alerts when new
+                properties match your search criteria.
+              </p>
+              <div className="mt-4 text-center">
+                <button className="px-4 py-2 border rounded text-sm">
+                  Sign Up Now
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6 border-l md:border-l-0 md:border-x">
+              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+                <Image src="/globe.svg" alt="sold" width={40} height={40} />
+              </div>
+              <h3 className="text-lg font-medium text-center mt-4">
+                Sold Prices
+              </h3>
+              <p className="text-sm text-gray-600 mt-2 text-center">
+                Find the value of any property in South Africa.
+              </p>
+              <div className="mt-4 text-center">
+                <button className="px-4 py-2 border rounded text-sm">
+                  View Sold Prices
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6">
+              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+                <Image src="/next.svg" alt="guides" width={40} height={40} />
+              </div>
+              <h3 className="text-lg font-medium text-center mt-4">
+                Looking to buy?
+              </h3>
+              <p className="text-sm text-gray-600 mt-2 text-center">
+                Get all the information you need when buying a property with our
+                comprehensive property guides.
+              </p>
+              <div className="mt-4 text-center">
+                <button className="px-4 py-2 border rounded text-sm">
+                  View Property Guides
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Property region list + Live Trends */}
+      <section className="bg-[#0b63c9] text-white py-12">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            <div className="lg:col-span-2">
+              <h3 className="text-xl font-semibold mb-6">
+                Property for Sale in Nigeria
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
+                <div>
+                  <h4 className="font-medium">Pretoria</h4>
+                  <ul className="mt-2 space-y-1 opacity-90">
+                    <li>Pretoria</li>
+                    <li>Randburg</li>
+                    <li>Mbopane</li>
+                    <li>Vanderbijlpark</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-medium">Johannesburg</h4>
+                  <ul className="mt-2 space-y-1 opacity-90">
+                    <li>Soweto</li>
+                    <li>Boksburg</li>
+                    <li>Benoni</li>
+                    <li>Sandton</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-medium">Midrand</h4>
+                  <ul className="mt-2 space-y-1 opacity-90">
+                    <li>Centurion</li>
+                    <li>Alberton</li>
+                    <li>Fochville</li>
+                    <li>Edenvale</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-medium">Other Areas</h4>
+                  <ul className="mt-2 space-y-1 opacity-90">
+                    <li>Roodepoort</li>
+                    <li>Germiston</li>
+                    <li>Vereeniging</li>
+                    <li>Randfontein</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end">
+              <div className="w-full max-w-sm bg-white text-gray-800 rounded-xl p-6 shadow-lg">
+                <div className="text-sm text-indigo-600 font-medium">
+                  Live Trends
+                </div>
+                <h4 className="text-lg font-semibold mt-2">Gauteng</h4>
+                <p className="text-xs text-gray-500 mt-2">
+                  Average Property Price
+                </p>
+                <div className="mt-4 h-32 bg-gray-100 rounded flex items-center justify-center text-sm text-gray-400">
+                  Chart placeholder
+                </div>
+                <div className="mt-4">
+                  <button className="w-full px-4 py-2 border rounded text-sm">
+                    Gauteng Property Trends
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* News + Advice */}
+      <section className="max-w-6xl mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="bg-white rounded-xl shadow p-6">
+            <h3 className="font-semibold mb-4">News</h3>
+            <div className="grid gap-4">
+              <div className="flex gap-4">
+                <Image
+                  src="/file.svg"
+                  alt="news"
+                  width={360}
+                  height={240}
+                  className="rounded"
+                />
+                <div>
+                  <h4 className="font-medium">
+                    Escape to the coast: Stunning holiday homes...
+                  </h4>
+                  <p className="text-sm text-gray-500 mt-2">
+                    Explore a selection of stunning holiday homes and...
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <Image
+                  src={banner4}
+                  alt="news"
+                  width={360}
+                  height={240}
+                  className="rounded"
+                />
+                <div>
+                  <h4 className="font-medium">
+                    Commercial leases and market insights
+                  </h4>
+                  <p className="text-sm text-gray-500 mt-2">
+                    What every tenant and investor should know.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow p-6">
+            <h3 className="font-semibold mb-4">Advice</h3>
+            <div className="grid gap-4">
+              <div className="flex gap-4">
+                <Image
+                  src={banner2}
+                  alt="advice"
+                  width={360}
+                  height={240}
+                  className="rounded"
+                />
+                <div>
+                  <h4 className="font-medium">
+                    How to handle a non-paying tenant legally
+                  </h4>
+                  <p className="text-sm text-gray-500 mt-2">
+                    Non-paying tenants can be stressful, but landlords have...
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <Image
+                  src={banner3}
+                  alt="advice"
+                  width={360}
+                  height={240}
+                  className="rounded"
+                />
+                <div>
+                  <h4 className="font-medium">
+                    Buying property with friends or family
+                  </h4>
+                  <p className="text-sm text-gray-500 mt-2">
+                    Buying together can unlock opportunities, but it&apos;s
+                    not...
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Mobile & Tablet promo */}
+      <section className="bg-[#0d1330] text-white py-12">
+        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center gap-8">
+          <div className="md:flex-1">
+            <h3 className="text-2xl font-semibold">
+              Property24 on Mobile and Tablet
+            </h3>
+            <p className="mt-3 text-gray-200">
+              Get all of South Africa&apos;s leading Estate Agent properties for
+              sale and on the go. Download our apps or browse on mobile.
+            </p>
+          </div>
+          <div className="md:flex-1 flex justify-center">
+            <div className="w-56 h-36 bg-white rounded-lg flex items-center justify-center text-gray-700">
+              <Image src="/window.svg" alt="device" width={160} height={120} />
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }
