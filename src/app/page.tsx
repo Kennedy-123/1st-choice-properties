@@ -1,15 +1,18 @@
 "use client";
 import Image from "next/image";
-import banner2 from "./image/banner2.jpg";
-import banner3 from "./image/banner3.webp";
-import banner4 from "./image/banner4.avif";
+// import banner2 from "./image/banner2.jpg";
+// import banner3 from "./image/banner3.webp";
+// import banner4 from "./image/banner4.avif";
 import Hero from "@/components/Hero";
+import playStore from "./image/playstore.png";
+import apple from "./image/apple.png";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-white text-gray-800">
       {/* Hero */}
-      <Hero />
+      <Hero text="in Nigeria"/>
       {/* Discover all things property */}
       <section className="max-w-6xl mx-auto px-6 py-12">
         <div className="text-center mb-8">
@@ -152,7 +155,7 @@ export default function Home() {
       </section>
 
       {/* News + Advice */}
-      <section className="max-w-6xl mx-auto px-6 py-12">
+      {/* <section className="max-w-6xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-white rounded-xl shadow p-6">
             <h3 className="font-semibold mb-4">News</h3>
@@ -235,27 +238,40 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
-
-      {/* Mobile & Tablet promo */}
-      <section className="bg-[#0d1330] text-white py-12">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center gap-8">
-          <div className="md:flex-1">
-            <h3 className="text-2xl font-semibold">
+      </section> */}
+      {/* App promo (design only — images intentionally omitted) */}
+      <section className="bg-[#0d1330] text-white py-12 mt-6 rounded-2xl mx-6 md:mx-8">
+        <div className="max-w-6xl mx-auto px-6 flex items-center gap-8">
+          {/* <div className="flex-1 flex items-center justify-center">
+            <div className="w-[420px] h-[260px] bg-[#0b1228] rounded-lg flex items-center justify-center">
+              <div className="text-gray-500">Device visuals omitted</div>
+            </div>
+          </div> */}
+          <div className="flex-1 place-items-center text-center">
+            <h3 className="text-3xl font-semibold mb-4">
               Property24 on Mobile and Tablet
             </h3>
-            <p className="mt-3 text-gray-200">
-              Get all of South Africa&apos;s leading Estate Agent properties for
-              sale and on the go. Download our apps or browse on mobile.
+            <p className="text-gray-200 mb-6">
+              Get all of the leading Estate Agent properties for sale or to rent
+              on your Android or Apple device. With Property24&apos;s intuitive
+              interface you can find and manage your favourite properties with
+              ease. Download the app to get started.
             </p>
-          </div>
-          <div className="md:flex-1 flex justify-center">
-            <div className="w-56 h-36 bg-white rounded-lg flex items-center justify-center text-gray-700">
-              <Image src="/window.svg" alt="device" width={160} height={120} />
+            <div className="flex gap-4 items-center justify-center">
+              <button className="px-4 py-2 bg-black/70 border border-white/20 rounded text-white flex items-center gap-2">
+              <Image src={apple} alt="Google Play icon" className="h-5 w-5 object-contain"/>
+                App Store
+              </button>
+              <button className="px-4 py-2 bg-black/70 border border-white/20 rounded text-white flex items-center gap-2">
+                <Image src={playStore} alt="Google Play icon" className="h-5 w-5 object-contain"/>
+                Google Play
+              </button>
             </div>
           </div>
         </div>
       </section>
+      {/* Footer */}
+      {/* <Footer /> */}
     </main>
   );
 }
