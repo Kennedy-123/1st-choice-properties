@@ -128,12 +128,6 @@ export default function MyBookingsPage() {
             <p className="text-gray-600 mb-6">
               You haven&apos;t made any booking requests yet. Start exploring properties!
             </p>
-            <button
-              onClick={() => router.push("/apartments")}
-              className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all"
-            >
-              Browse Properties
-            </button>
           </div>
         ) : (
           <div className="grid gap-6">
