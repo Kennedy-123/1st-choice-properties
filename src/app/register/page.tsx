@@ -61,27 +61,27 @@ export default function RegisterPage() {
         )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
-            <input disabled={loading} value={email} onChange={(e)=>setEmail(e.target.value)} className="mt-1 w-full px-3 py-2 border rounded" type="email" />
-            {errors.email && <p className="text-xs text-red-600 mt-1">{errors.email}</p>}
-          </div>
-
-          <div>
             <label className="block text-sm font-medium text-gray-700">Username</label>
-            <input disabled={loading} value={username} onChange={(e)=>setUsername(e.target.value)} className="mt-1 w-full px-3 py-2 border rounded" type="text" />
+            <input disabled={loading} value={username} onChange={(e)=>setUsername(e.target.value)} className="mt-1 w-full px-3 py-2 border rounded" placeholder="Enter Username" type="text" />
             {errors.username && <p className="text-xs text-red-600 mt-1">{errors.username}</p>}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700">Full Name</label>
-            <input disabled={loading} value={fullName} onChange={(e)=>setFullName(e.target.value)} className="mt-1 w-full px-3 py-2 border rounded" type="text" />
+            <input disabled={loading} value={fullName} onChange={(e)=>setFullName(e.target.value)} className="mt-1 w-full px-3 py-2 border rounded" placeholder="Enter Full name" type="text" />
             {errors.fullName && <p className="text-xs text-red-600 mt-1">{errors.fullName}</p>}
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <input disabled={loading} value={email} onChange={(e)=>setEmail(e.target.value)} className="mt-1 w-full px-3 py-2 border rounded" placeholder="Enter Email Address" type="email" />
+            {errors.email && <p className="text-xs text-red-600 mt-1">{errors.email}</p>}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700">Password</label>
             <div className="relative mt-1">
-              <input disabled={loading} value={password} onChange={(e)=>setPassword(e.target.value)} className="w-full px-3 py-2 border rounded pr-10" type={showPassword?"text":"password"} />
+              <input disabled={loading} value={password} onChange={(e)=>setPassword(e.target.value)} className="w-full px-3 py-2 border rounded pr-10" placeholder="Enter Password" type={showPassword?"text":"password"} />
               <button type="button" onClick={()=>setShowPassword(s=>!s)} className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-gray-600">{showPassword?"Hide":"Show"}</button>
             </div>
             {errors.password && <p className="text-xs text-red-600 mt-1">{errors.password}</p>}
@@ -90,20 +90,20 @@ export default function RegisterPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
             <div className="relative mt-1">
-              <input disabled={loading} value={confirmPassword} onChange={(e)=>setConfirmPassword(e.target.value)} className="w-full px-3 py-2 border rounded pr-10" type={showConfirm?"text":"password"} />
+              <input disabled={loading} value={confirmPassword} placeholder="Enter Confirm Password" onChange={(e)=>setConfirmPassword(e.target.value)} className="w-full px-3 py-2 border rounded pr-10" type={showConfirm?"text":"password"} />
               <button type="button" onClick={()=>setShowConfirm(s=>!s)} className="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-gray-600">{showConfirm?"Hide":"Show"}</button>
             </div>
             {errors.confirmPassword && <p className="text-xs text-red-600 mt-1">{errors.confirmPassword}</p>}
           </div>
 
           <div>
-            <button disabled={loading} className="w-full bg-blue-600 hover:bg-blue-800 hover:cursor-pointer text-white px-4 py-2 rounded">{loading?"Creating...":"Create account"}</button>
+            <button disabled={loading} className="w-full bg-green-700 hover:bg-green-800 hover:cursor-pointer text-white px-4 py-2 rounded">{loading?"Creating...":"Create account"}</button>
           </div>
         </form>
 
         <p className="mt-4 text-center text-sm text-gray-600">
           Already have an account?{' '}
-          <Link href="/login" className="text-blue-600 hover:underline">Login</Link>
+          <Link href="/login" className="text-green-600 hover:underline">Login</Link>
         </p>
       </div>
     </div>

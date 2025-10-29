@@ -6,15 +6,14 @@ import Image from "next/image";
 import Hero from "@/components/Hero";
 import playStore from "./image/playstore.png";
 import apple from "./image/apple.png";
-import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-white text-gray-800">
       {/* Hero */}
-      <Hero text="in Nigeria"/>
+      <Hero text="in Nigeria" />
       {/* Discover all things property */}
-      <section className="max-w-6xl mx-auto px-6 py-12">
+      {/* <section className="max-w-6xl mx-auto px-6 py-12">
         <div className="text-center mb-8">
           <h2 className="text-2xl font-semibold">
             Discover all things property
@@ -81,10 +80,10 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Property region list + Live Trends */}
-      <section className="bg-[#0b63c9] text-white py-12">
+      {/* <section className="bg-green-500 text-white py-12">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             <div className="lg:col-span-2">
@@ -152,7 +151,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* News + Advice */}
       {/* <section className="max-w-6xl mx-auto px-6 py-12">
@@ -240,7 +239,7 @@ export default function Home() {
         </div>
       </section> */}
       {/* App promo (design only — images intentionally omitted) */}
-      <section className="bg-[#0d1330] text-white py-12 mt-6 rounded-2xl mx-6 md:mx-8">
+      <section className="bg-green-900 text-white py-12 mt-10 mb-10">
         <div className="max-w-6xl mx-auto px-6 flex items-center gap-8">
           {/* <div className="flex-1 flex items-center justify-center">
             <div className="w-[420px] h-[260px] bg-[#0b1228] rounded-lg flex items-center justify-center">
@@ -259,11 +258,19 @@ export default function Home() {
             </p>
             <div className="flex gap-4 items-center justify-center">
               <button className="px-4 py-2 bg-black/70 border border-white/20 rounded text-white flex items-center gap-2">
-              <Image src={apple} alt="Google Play icon" className="h-5 w-5 object-contain"/>
+                <Image
+                  src={apple}
+                  alt="Google Play icon"
+                  className="h-5 w-5 object-contain"
+                />
                 App Store
               </button>
               <button className="px-4 py-2 bg-black/70 border border-white/20 rounded text-white flex items-center gap-2">
-                <Image src={playStore} alt="Google Play icon" className="h-5 w-5 object-contain"/>
+                <Image
+                  src={playStore}
+                  alt="Google Play icon"
+                  className="h-5 w-5 object-contain"
+                />
                 Google Play
               </button>
             </div>

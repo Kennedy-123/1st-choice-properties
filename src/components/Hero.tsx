@@ -1,211 +1,158 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import Image from "next/image";
 import banner from "../app/image/banner.webp";
+import { useSearchApartments } from "@/hooks/useSearchApartments";
+import { Apartment } from "@/lib/types";
+import Link from "next/link";
 
-type DropdownProps = {
-  label: string;
-  options?: string[];
-  onChange?: (value: string) => void;
-  initial?: string | null;
-  buttonClass?: string;
-};
+const priceRanges = ["Under ₦500K", "₦500K - ₦1M", "₦1M - ₦5M", "Above ₦5M"];
 
-interface HeroProps {
-  text: string;
-}
+function Hero({ text }: { text: string }) {
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const modalRef = useRef<HTMLDivElement | null>(null);
 
-function Dropdown({
-  label,
-  options = [],
-  onChange,
-  initial = null,
-  buttonClass = "",
-}: DropdownProps) {
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(initial ?? label);
-  const ref = useRef<HTMLDivElement | null>(null);
+  const {
+    query,
+    setQuery,
+    selectedPrice,
+    setSelectedPrice,
+    apartments,
+    loading,
+    error,
+    refreshSearch, // new helper from hook
+  } = useSearchApartments();
 
-  useEffect(() => {
-    function handleDown(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleDown);
-    return () => document.removeEventListener("mousedown", handleDown);
-  }, []);
-
-  function select(v: string) {
-    setValue(v);
-    setOpen(false);
-    onChange?.(v);
-  }
-
-  return (
-    <div ref={ref} className="relative w-full sm:w-auto">
-      <button
-        type="button"
-        onClick={() => setOpen((s) => !s)}
-        className={`w-full sm:min-w-[160px] flex items-center justify-between px-4 sm:px-5 py-3 bg-[#0b63c9] text-white rounded-md border border-white/20 shadow-inner ${buttonClass}`}
-      >
-        <span className="truncate">{value}</span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-4 w-4 ml-3 opacity-80"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            fillRule="evenodd"
-            d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.08 1.04l-4.25 4.25a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"
-            clipRule="evenodd"
-          />
-        </svg>
-      </button>
-
-      {open && (
-        <ul className="absolute left-0 mt-2 w-full sm:w-56 bg-white text-gray-800 rounded shadow-lg overflow-hidden z-30">
-          {options.map((o) => (
-            <li key={o}>
-              <button
-                onClick={() => select(o)}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
-              >
-                {o}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-
-function Hero({ text }: HeroProps) {
-  const [propertyType, setPropertyType] = useState("Property Type");
-  const [minPrice, setMinPrice] = useState("Min Price");
-  const [maxPrice, setMaxPrice] = useState("Max Price");
-  const [bedrooms, setBedrooms] = useState("Bedrooms");
-  const [moreFilters, setMoreFilters] = useState("For?");
+  const togglePrice = (range: string) => {
+    setSelectedPrice((prev) => (prev === range ? null : range));
+  };
 
   return (
     <section className="relative">
-      <div className="relative h-96 md:h-[520px] w-full z-0">
+      {/* Hero Banner */}
+      <div className="relative h-72 sm:h-96 md:h-[520px] w-full">
         <Image
           src={banner}
           alt="Hero banner"
-          priority
           fill
           className="object-cover"
+          priority
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/20 flex flex-col justify-center z-10">
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="text-center text-white pt-8">
-              <h1 className="text-3xl md:text-5xl lg:text-6xl font-semibold tracking-tight">
-                Find Properties {text}
-              </h1>
-            </div>
-          </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/20 flex flex-col justify-center text-center text-white px-4">
+          <h1 className="text-3xl sm:text-5xl font-semibold">
+            Discover Your Dream Home {text}
+          </h1>
+          <p className="mt-2 text-gray-100 text-sm sm:text-base">
+            Browse freely, login when ready to book!
+          </p>
         </div>
       </div>
 
-      {/* Search card */}
-      <div className="-mt-16 relative z-20">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="bg-white rounded-xl shadow-2xl p-4 flex flex-col sm:flex-row gap-4">
-            <div className="flex items-center gap-3 text-gray-400 pl-2 flex-shrink-0">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M21 21l-4.35-4.35"
-                />
-                <circle
-                  cx="11"
-                  cy="11"
-                  r="6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                />
-              </svg>
-            </div>
+      {/* Search Bar */}
+      <div className="-mt-12 sm:-mt-16 relative z-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="bg-white rounded-xl shadow-2xl p-3 sm:p-4 flex flex-col sm:flex-row items-stretch gap-3">
             <input
-              className="flex-1 px-4 py-3 rounded-md focus:outline-none text-gray-700"
-              placeholder="Search for a City, Suburb or Web Reference"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search properties, locations..."
+              className="flex-1 px-4 py-3 rounded-md focus:outline-none text-gray-700 border border-gray-200"
             />
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-              <button className="px-4 py-2 border rounded-md text-sm bg-white">
-                Map
+            <div className="flex gap-2 items-center">
+              <button
+                onClick={() => setIsFilterOpen(true)}
+                className="px-3 py-2 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium"
+              >
+                Filters
               </button>
-              <button className="px-8 py-3 bg-red-500 text-white rounded-xl shadow-lg">
-                Search
+              <button
+                onClick={refreshSearch}
+                className="px-4 py-2 font-bold bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-lg"
+              >
+                {loading ? "Searching..." : "Search"}
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Filter strip */}
-      <div className="bg-[#0b63c9] mt-6">
-        <div className="max-w-6xl mx-auto px-6 py-6">
-          <div className="flex flex-wrap gap-4 items-center">
-            <Dropdown
-              label="Property Type"
-              options={["Any", "House", "Apartment", "Townhouse", "Land"]}
-              initial={propertyType}
-              onChange={(v) => setPropertyType(v)}
-            />
-            <Dropdown
-              label="Min Price"
-              options={[
-                "Any",
-                "R 100 000",
-                "R 150 000",
-                "R 200 000",
-                "R 250 000",
-                "R 300 000",
-                "R 350 000",
-                "R 400 000",
-                "Custom Price",
-              ]}
-              initial={minPrice}
-              onChange={(v) => setMinPrice(v)}
-            />
-            <Dropdown
-              label="Max Price"
-              options={[
-                "Any",
-                "R 500 000",
-                "R 750 000",
-                "R 1 000 000",
-                "R 1 500 000",
-                "R 2 000 000",
-              ]}
-              initial={maxPrice}
-              onChange={(v) => setMaxPrice(v)}
-            />
-            <Dropdown
-              label="Bedrooms"
-              options={["Any", "1+", "2+", "3+", "4+", "5+"]}
-              initial={bedrooms}
-              onChange={(v) => setBedrooms(v)}
-            />
-            <Dropdown
-              label="More Filters +"
-              options={["Sale", "Rent"]}
-              initial={moreFilters}
-              onChange={(v) => setMoreFilters(v)}
-            />
+      {/* Filter Modal */}
+      {isFilterOpen && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div
+            ref={modalRef}
+            className="bg-white w-full max-w-md sm:max-w-lg rounded-2xl p-6 shadow-2xl"
+          >
+            <div className="flex justify-between mb-4">
+              <h2 className="text-xl font-semibold">Filter Properties</h2>
+              <button onClick={() => setIsFilterOpen(false)}>✕</button>
+            </div>
+            <div>
+              <h3 className="mb-3 text-gray-700">Price Range</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {priceRanges.map((range) => (
+                  <button
+                    key={range}
+                    onClick={() => togglePrice(range)}
+                    className={`w-full text-sm font-medium px-3 py-2 rounded-lg border transition-colors ${
+                      selectedPrice === range
+                        ? "bg-green-600 text-white border-green-600"
+                        : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                    }`}
+                  >
+                    {range}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="mt-5 flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => setIsFilterOpen(false)}
+                className="flex-1 px-4 py-3 border border-green-600 text-green-600 rounded-full"
+              >
+                Close
+              </button>
+            </div>
           </div>
+        </div>
+      )}
+
+      {/* Results */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-10">
+        {error && <p className="text-red-600">{error}</p>}
+        {loading && <p>Loading apartments...</p>}
+        {!loading && apartments.length === 0 && query && (
+          <p>No apartments found for your search.</p>
+        )}
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
+          {apartments.map((apt: Apartment) => (
+            <div
+              key={apt.id}
+              className="border rounded-xl p-4 shadow hover:shadow-lg transition"
+            >
+              <div className="relative h-40 w-full mb-3">
+                <Image
+                  src={apt.gallery?.[0]?.imageUrl || "/placeholder.jpg"}
+                  alt={apt.title}
+                  fill
+                  className="object-cover rounded-lg"
+                />
+              </div>
+              <h3 className="font-semibold text-lg">{apt.title}</h3>
+              <p className="text-sm text-gray-600">{apt.location}</p>
+              <p className="mt-2 text-green-600 font-bold">
+                ₦{Number(apt.price).toLocaleString()}
+              </p>
+              <Link href={`/apartments/${apt.id}`}>
+                <button
+                  onClick={() => console.log("Book now clicked for:", apt.id)}
+                  className="w-full mt-2 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  Book Now
+                </button>
+              </Link>
+            </div>
+          ))}
         </div>
       </div>
     </section>

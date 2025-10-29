@@ -6,14 +6,27 @@ interface LoginData {
   password: string;
 }
 
+interface User {
+  id: string;
+  email: string;
+  username: string;
+  fullName: string;
+  role: string;
+  isActive: boolean;
+  isEmailVerified: boolean;
+}
+
+interface Tokens {
+  accessToken: string;
+  refreshToken: string;
+}
+
 interface LoginResponse {
-  token?: string;
-  message?: string;
-  user?: {
-    id: string;
-    email: string;
-    username?: string;
-    fullName?: string;
+  success: boolean;
+  message: string;
+  data: {
+    user: User;
+    tokens: Tokens;
   };
 }
 
@@ -38,10 +51,12 @@ export const useLogin = () => {
         }
       );
 
-      // If your API returns a token, you can store it here
-      if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
-      }
+      // Extract tokens and user
+      const { accessToken, refreshToken } = response.data.data.tokens;
+
+      // Store tokens in localStorage
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
 
       setSuccess(true);
       return response.data;

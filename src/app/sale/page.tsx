@@ -2,15 +2,15 @@
 import React from "react";
 import Hero from "@/components/Hero";
 import RentPropertyCard from "@/components/RentPropertyCard";
-import { useApartments } from "@/hooks/useApartments";
+import { useApartmentsForSale } from "@/hooks/useApartmentsForSale";
 import Loader from "@/components/Loader";
 
 function Page() {
-  const { apartments, loading, error } = useApartments();
+  const { apartments, loading, error } = useApartmentsForSale();
 
   return (
     <div>
-      <Hero text="to rent" />
+      <Hero text="for sale" />
       <section className="bg-gray-50 min-h-[60vh] py-8">
         <div className=" mx-auto px-4">
           {loading && (
@@ -23,7 +23,7 @@ function Page() {
           )}
           {!loading && !error && apartments.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-gray-600 text-lg">No properties available for rent at the moment.</p>
+              <p className="text-gray-600 text-lg">No properties available for sale at the moment.</p>
             </div>
           )}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

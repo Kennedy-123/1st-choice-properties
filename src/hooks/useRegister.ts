@@ -18,7 +18,9 @@ export const useRegister = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
-  const registerUser = async (data: RegisterData): Promise<RegisterResponse | null> => {
+  const registerUser = async (
+    data: RegisterData
+  ): Promise<RegisterResponse | null> => {
     setLoading(true);
     setError(null);
     setSuccess(false);
@@ -35,13 +37,12 @@ export const useRegister = () => {
       );
 
       setSuccess(true);
-      console.log("Registration successful:", response.data);
       return response.data;
     } catch (err: unknown) {
       console.error("Registration error:", err);
       if (axios.isAxiosError(err)) {
         const resp = err.response;
-        const serverMessage = resp?.data && resp.data.message
+        const serverMessage = resp?.data && resp.data.message;
         if (resp?.status === 409) {
           setError(serverMessage || "User already exists");
         } else if (resp?.status === 400) {
