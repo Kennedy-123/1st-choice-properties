@@ -126,9 +126,10 @@ function Hero({ text }: { text: string }) {
         )}
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
           {apartments.map((apt: Apartment) => (
-            <div
+            <Link 
               key={apt.id}
-              className="border rounded-xl p-4 shadow hover:shadow-lg transition"
+              href={`/apartments/${apt.id}`}
+              className="block border rounded-xl p-4 shadow hover:shadow-lg transition hover:border-green-500"
             >
               <div className="relative h-40 w-full mb-3">
                 <Image
@@ -143,15 +144,12 @@ function Hero({ text }: { text: string }) {
               <p className="mt-2 text-green-600 font-bold">
                 ₦{Number(apt.price).toLocaleString()}
               </p>
-              <Link href={`/apartments/${apt.id}`}>
-                <button
-                  onClick={() => console.log("Book now clicked for:", apt.id)}
-                  className="w-full mt-2 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-                >
-                  Book Now
-                </button>
-              </Link>
-            </div>
+              <div 
+                className="w-full mt-2 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-center"
+              >
+                Book Now
+              </div>
+            </Link>
           ))}
         </div>
       </div>
