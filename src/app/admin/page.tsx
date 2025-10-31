@@ -14,7 +14,8 @@ import FAQsTab from "@/components/admin/FAQsTab";
 import BookingsTab from "@/components/admin/BookingsTab";
 import CategoryModal from "@/components/admin/CategoryModal";
 import FAQModal from "@/components/admin/FAQModal";
-import Image from 'next/image';
+import Image from "next/image";
+import { v4 as uuidv4 } from 'uuid';
 
 type TabType = "apartments" | "categories" | "faqs" | "bookings";
 
@@ -44,7 +45,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<TabType>("apartments");
   const [showApartmentModal, setShowApartmentModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
-  
+
   // Use the useApartments hook to fetch all apartments
   const { apartments, loading, error } = useApartments();
   const [showFAQModal, setShowFAQModal] = useState(false);
@@ -153,12 +154,18 @@ export default function AdminDashboard() {
     e.preventDefault();
     setApartmentError(null);
     // Validate according to API rules
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(apartmentForm.apartmentCategoryId)) {
-      setApartmentError("Category ID must be a valid UUID (e.g., 123e4567-e89b-12d3-a456-426614174000)");
+      setApartmentError(
+        "Category ID must be a valid UUID (e.g., 123e4567-e89b-12d3-a456-426614174000)"
+      );
       return;
     }
-    if (apartmentForm.publicIds && apartmentForm.publicIds.trim().length > 255) {
+    if (
+      apartmentForm.publicIds &&
+      apartmentForm.publicIds.trim().length > 255
+    ) {
       setApartmentError("Public IDs must be 255 characters or fewer");
       return;
     }
@@ -176,14 +183,14 @@ export default function AdminDashboard() {
                 .split(",")
                 .map((f) => f.trim())
                 .filter((f) => f)
-            : undefined,
+            : [],
           gallery: apartmentForm.gallery
             ? apartmentForm.gallery
                 .split(",")
                 .map((g) => g.trim())
                 .filter((g) => g)
-            : undefined,
-          publicIds: apartmentForm.publicIds?.trim() || undefined,
+            : [],
+          publicIds: apartmentForm.publicIds?.trim() || "",
         });
       } else {
         await apartmentHook.createApartment({
@@ -193,19 +200,19 @@ export default function AdminDashboard() {
           price: Number(apartmentForm.price),
           paymentPlan: apartmentForm.paymentPlan,
           apartmentCategoryId: apartmentForm.apartmentCategoryId,
+          publicIds: apartmentForm.publicIds?.trim() || "",
           features: apartmentForm.features
             ? apartmentForm.features
                 .split(",")
                 .map((f) => f.trim())
                 .filter((f) => f)
-            : undefined,
+            : [],
           gallery: apartmentForm.gallery
             ? apartmentForm.gallery
                 .split(",")
                 .map((g) => g.trim())
                 .filter((g) => g)
-            : undefined,
-          publicIds: apartmentForm.publicIds?.trim() || undefined,
+            : [],
         });
       }
       setShowApartmentModal(false);
@@ -223,9 +230,11 @@ export default function AdminDashboard() {
       });
       setEditingApartment(null);
     } catch (error: unknown) {
-      let errorMessage = 'Failed to save apartment. Please try again.';
-      if (error && typeof error === 'object' && 'response' in error) {
-        const apiError = error as { response?: { data?: { message?: string } } };
+      let errorMessage = "Failed to save apartment. Please try again.";
+      if (error && typeof error === "object" && "response" in error) {
+        const apiError = error as {
+          response?: { data?: { message?: string } };
+        };
         if (apiError.response?.data?.message) {
           errorMessage = apiError.response.data.message;
         }
@@ -246,9 +255,11 @@ export default function AdminDashboard() {
       }
       handleCloseCategoryModal();
     } catch (error: unknown) {
-      let errorMessage = 'Failed to save category. Please try again.';
-      if (error && typeof error === 'object' && 'response' in error) {
-        const apiError = error as { response?: { data?: { message?: string } } };
+      let errorMessage = "Failed to save category. Please try again.";
+      if (error && typeof error === "object" && "response" in error) {
+        const apiError = error as {
+          response?: { data?: { message?: string } };
+        };
         if (apiError.response?.data?.message) {
           errorMessage = apiError.response.data.message;
         }
@@ -274,9 +285,11 @@ export default function AdminDashboard() {
       }
       handleCloseFAQModal();
     } catch (error: unknown) {
-      let errorMessage = 'Failed to save FAQ. Please try again.';
-      if (error && typeof error === 'object' && 'response' in error) {
-        const apiError = error as { response?: { data?: { message?: string } } };
+      let errorMessage = "Failed to save FAQ. Please try again.";
+      if (error && typeof error === "object" && "response" in error) {
+        const apiError = error as {
+          response?: { data?: { message?: string } };
+        };
         if (apiError.response?.data?.message) {
           errorMessage = apiError.response.data.message;
         }
@@ -336,7 +349,7 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-lg shadow-sm p-6">
           {/* Apartments Tab */}
           {activeTab === "apartments" && (
-            <ApartmentsTab 
+            <ApartmentsTab
               onAddClick={() => setShowApartmentModal(true)}
               apartments={apartments}
               loading={loading}
@@ -512,7 +525,7 @@ export default function AdminDashboard() {
                   <button
                     type="button"
                     onClick={() => {
-                      const newUUID = crypto.randomUUID();
+                      const newUUID = uuidv4();
                       setApartmentForm({
                         ...apartmentForm,
                         apartmentCategoryId: newUUID,
@@ -578,36 +591,49 @@ export default function AdminDashboard() {
                   placeholder="Enter image URLs separated by commas"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent mb-2"
                 />
-                
+
                 {/* Image previews */}
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {apartmentForm.gallery.split(',').filter(url => url.trim()).map((url, i) => (
-                    <div key={i} className="relative group">
-                      <div className="h-20 w-20 relative">
-                        <Image
-                          src={url.trim()}
-                          alt={`Preview ${i}`}
-                          fill
-                          className="object-cover rounded border border-gray-200"
-                          onError={() => {
-                            const urls = apartmentForm.gallery.split(',').filter((_, idx) => idx !== i);
-                            setApartmentForm({...apartmentForm, gallery: urls.join(',')});
+                  {apartmentForm.gallery
+                    .split(",")
+                    .filter((url) => url.trim())
+                    .map((url, i) => (
+                      <div key={i} className="relative group">
+                        <div className="h-20 w-20 relative">
+                          <Image
+                            src={url.trim()}
+                            alt={`Preview ${i}`}
+                            fill
+                            className="object-cover rounded border border-gray-200"
+                            onError={() => {
+                              const urls = apartmentForm.gallery
+                                .split(",")
+                                .filter((_, idx) => idx !== i);
+                              setApartmentForm({
+                                ...apartmentForm,
+                                gallery: urls.join(","),
+                              });
+                            }}
+                            unoptimized={true} // For external URLs
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const urls = apartmentForm.gallery
+                              .split(",")
+                              .filter((_, idx) => idx !== i);
+                            setApartmentForm({
+                              ...apartmentForm,
+                              gallery: urls.join(","),
+                            });
                           }}
-                          unoptimized={true} // For external URLs
-                        />
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          ×
+                        </button>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const urls = apartmentForm.gallery.split(',').filter((_, idx) => idx !== i);
-                          setApartmentForm({...apartmentForm, gallery: urls.join(',')});
-                        }}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
               <div>

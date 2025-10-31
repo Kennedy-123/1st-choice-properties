@@ -248,13 +248,13 @@ export default function Home() {
           </div> */}
           <div className="flex-1 place-items-center text-center">
             <h3 className="text-3xl font-semibold mb-4">
-              Property24 on Mobile and Tablet
+              1st Choice Properties on Mobile and Tablet
             </h3>
             <p className="text-gray-200 mb-6">
-              Get all of the leading Estate Agent properties for sale or to rent
-              on your Android or Apple device. With Property24&apos;s intuitive
-              interface you can find and manage your favourite properties with
-              ease. Download the app to get started.
+              Discover the best properties for sale and rent anytime, anywhere
+              with the 1st Choice Properties app. Our intuitive design makes it
+              easy to search, browse, and manage your favourite listings right
+              from your Android or Apple device.
             </p>
             <div className="flex gap-4 items-center justify-center">
               <button className="px-4 py-2 bg-black/70 border border-white/20 rounded text-white flex items-center gap-2">
@@ -277,8 +277,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-      {/* Footer */}
-      {/* <Footer /> */}
     </main>
   );
 }

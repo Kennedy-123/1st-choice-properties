@@ -30,10 +30,11 @@ export const useAdminApartments = () => {
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
       setError(error.response?.data?.message || "Failed to create apartment");
-      console.log(err)
+      console.log(err);
       throw err;
     } finally {
       setLoading(false);
+      console.log(data);
     }
   };
 
