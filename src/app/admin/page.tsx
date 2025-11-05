@@ -150,6 +150,16 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleDeleteApartment = async (id: string) => {
+    try {
+      await apartmentHook.deleteApartment(id);
+      // You might want to refresh the apartments list here
+      // You can implement a refetch function in your useApartments hook if needed
+    } catch (error) {
+      console.error("Failed to delete apartment:", error);
+    }
+  };
+
   const handleCreateApartment = async (e: React.FormEvent) => {
     e.preventDefault();
     setApartmentError(null);
@@ -351,6 +361,7 @@ export default function AdminDashboard() {
           {activeTab === "apartments" && (
             <ApartmentsTab
               onAddClick={() => setShowApartmentModal(true)}
+              onDelete={handleDeleteApartment}
               apartments={apartments}
               loading={loading}
               error={error}

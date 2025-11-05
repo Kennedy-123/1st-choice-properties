@@ -65,6 +65,7 @@ export const useAdminApartments = () => {
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
       setError(error.response?.data?.message || "Failed to delete apartment");
+      console.log(error.response?.data?.message)
       throw err;
     } finally {
       setLoading(false);

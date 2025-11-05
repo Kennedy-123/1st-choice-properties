@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
-import { Plus, Edit, Trash2, Loader2 } from "lucide-react";
+import React, { useState } from "react";
+import { Plus, Edit, Trash2, Loader2, X } from "lucide-react";
 import { Apartment } from "@/lib/types";
 
 interface ApartmentsTabProps {
   onAddClick: () => void;
+  onDelete: (id: string) => Promise<void>;
   apartments: Apartment[];
   loading: boolean;
   error: string | null;
@@ -13,10 +14,38 @@ interface ApartmentsTabProps {
 
 export default function ApartmentsTab({
   onAddClick,
+  onDelete,
   apartments = [],
   loading,
   error,
 }: ApartmentsTabProps) {
+  const [apartmentToDelete, setApartmentToDelete] = useState<Apartment | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteClick = (apartment: Apartment, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setApartmentToDelete(apartment);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!apartmentToDelete) return;
+    
+    setIsDeleting(true);
+    try {
+      await onDelete(apartmentToDelete.id);
+      setApartmentToDelete(null);
+    } catch (error) {
+      console.error("Error deleting apartment:", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    if (!isDeleting) {
+      setApartmentToDelete(null);
+    }
+  };
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -53,6 +82,11 @@ export default function ApartmentsTab({
 
   return (
     <div>
+      {error && (
+        <div className="mb-4 p-3 bg-red-50 text-red-700 text-sm rounded-md">
+          {error}
+        </div>
+      )}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h2 className="text-2xl font-semibold text-gray-900">
           Manage Apartments
@@ -140,7 +174,12 @@ export default function ApartmentsTab({
                     <button className="text-blue-600 hover:text-blue-900 mr-4">
                       <Edit className="w-4 h-4" />
                     </button>
-                    <button className="text-red-600 hover:text-red-900">
+                    <button 
+                      onClick={(e) => handleDeleteClick(apartment, e)}
+                      className="text-red-600 hover:text-red-900"
+                      title="Delete apartment"
+                      disabled={isDeleting}
+                    >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </td>
@@ -148,6 +187,59 @@ export default function ApartmentsTab({
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {apartmentToDelete && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={handleCloseModal}
+        >
+          <div 
+            className="bg-white rounded-lg max-w-md w-full p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium text-gray-900">Delete Apartment</h3>
+              <button
+                onClick={handleCloseModal}
+                className="text-gray-400 hover:text-gray-500"
+                disabled={isDeleting}
+                aria-label="Close"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete the apartment &quot;{apartmentToDelete.title}&quot;? This action cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                type="button"
+                onClick={handleCloseModal}
+                disabled={isDeleting}
+                className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4 inline" />
+                    Deleting...
+                  </>
+                ) : (
+                  'Delete'
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
