@@ -1,6 +1,5 @@
 "use client";
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAdminApartments } from "@/hooks/useAdminApartments";
 import { useAdminCategories } from "@/hooks/useAdminCategories";
 import { Apartment } from "@/lib/types";
@@ -15,7 +14,7 @@ import BookingsTab from "@/components/admin/BookingsTab";
 import CategoryModal from "@/components/admin/CategoryModal";
 import FAQModal from "@/components/admin/FAQModal";
 import Image from "next/image";
-import { v4 as uuidv4 } from 'uuid';
+import api from "@/lib/axiosInstance";
 
 type TabType = "apartments" | "categories" | "faqs" | "bookings";
 
@@ -42,6 +41,29 @@ interface FAQFormData {
 }
 
 export default function AdminDashboard() {
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    []
+  );
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
+  const [categoriesError, setCategoriesError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      setCategoriesLoading(true);
+      setCategoriesError(null);
+      try {
+        const res = await api.get("/apartment-categories");
+        const fetched = res.data?.data?.categories || [];
+        setCategories(fetched);
+      } catch {
+        setCategoriesError("Failed to fetch apartment categories.");
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
   const [activeTab, setActiveTab] = useState<TabType>("apartments");
   const [showApartmentModal, setShowApartmentModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
@@ -153,8 +175,6 @@ export default function AdminDashboard() {
   const handleDeleteApartment = async (id: string) => {
     try {
       await apartmentHook.deleteApartment(id);
-      // You might want to refresh the apartments list here
-      // You can implement a refetch function in your useApartments hook if needed
     } catch (error) {
       console.error("Failed to delete apartment:", error);
     }
@@ -163,15 +183,6 @@ export default function AdminDashboard() {
   const handleCreateApartment = async (e: React.FormEvent) => {
     e.preventDefault();
     setApartmentError(null);
-    // Validate according to API rules
-    const uuidRegex =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-    if (!uuidRegex.test(apartmentForm.apartmentCategoryId)) {
-      setApartmentError(
-        "Category ID must be a valid UUID (e.g., 123e4567-e89b-12d3-a456-426614174000)"
-      );
-      return;
-    }
     if (
       apartmentForm.publicIds &&
       apartmentForm.publicIds.trim().length > 255
@@ -239,6 +250,8 @@ export default function AdminDashboard() {
         publicIds: "",
       });
       setEditingApartment(null);
+      // Reload the page to show the latest changes
+      window.location.reload();
     } catch (error: unknown) {
       let errorMessage = "Failed to save apartment. Please try again.";
       if (error && typeof error === "object" && "response" in error) {
@@ -514,56 +527,36 @@ export default function AdminDashboard() {
                     <option value="MONTHLY">MONTHLY</option>
                   </select>
                 </div>
-                <div className="flex gap-2">
-                  <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Category ID
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={apartmentForm.apartmentCategoryId}
-                      onChange={(e) =>
-                        setApartmentForm({
-                          ...apartmentForm,
-                          apartmentCategoryId: e.target.value,
-                        })
-                      }
-                      placeholder="e.g., 123e4567-e89b-12d3-a456-426614174000"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const newUUID = uuidv4();
-                      setApartmentForm({
-                        ...apartmentForm,
-                        apartmentCategoryId: newUUID,
-                      });
-                    }}
-                    className="mt-6 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 text-sm"
-                  >
-                    Generate UUID
-                  </button>
-                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Listing Type
+                  Apartment Category
                 </label>
                 <select
-                  value={apartmentForm.listingType}
+                  required
+                  value={apartmentForm.apartmentCategoryId}
                   onChange={(e) =>
                     setApartmentForm({
                       ...apartmentForm,
-                      listingType: e.target.value,
+                      apartmentCategoryId: e.target.value,
                     })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 >
-                  <option value="rent">Rent</option>
-                  <option value="sale">Sale</option>
+                  <option value="">Select a category</option>
+                  {categoriesLoading && (
+                    <option disabled>Loading categories...</option>
+                  )}
+                  {categoriesError && (
+                    <option disabled>{categoriesError}</option>
+                  )}
+                  {!categoriesLoading &&
+                    !categoriesError &&
+                    categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
                 </select>
               </div>
               <div>
