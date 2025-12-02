@@ -100,6 +100,15 @@ function Header() {
             Home
           </Link>
           <Link
+            href="/contact"
+            className={`hover:text-gray-900 ${
+              isActive("/contact") ? "text-green-600 font-medium" : ""
+            }`}
+            onClick={handleNavigation}
+          >
+            Contact
+          </Link>
+          <Link
             href="/rent"
             className={`hover:text-gray-900 ${
               isActive("/rent") ? "text-green-600 font-medium" : ""
@@ -127,15 +136,6 @@ function Header() {
             Favourites
           </Link>
           <Link
-            href="/chat"
-            className={`hover:text-gray-900 ${
-              isActive("/chat") ? "text-green-600 font-medium" : ""
-            }`}
-            onClick={handleNavigation}
-          >
-            Chat
-          </Link>
-          <Link
             href="/my-bookings"
             className={`hover:text-gray-900 ${
               isActive("/my-bookings") ? "text-green-600 font-medium" : ""
@@ -152,15 +152,6 @@ function Header() {
             onClick={handleNavigation}
           >
             About
-          </Link>
-          <Link
-            href="/terms"
-            className={`hover:text-gray-900 ${
-              isActive("/terms") ? "text-green-600 font-medium" : ""
-            }`}
-            onClick={handleNavigation}
-          >
-            Terms
           </Link>
           {isLoggedIn && (
             <Link
@@ -279,6 +270,15 @@ function Header() {
               onClick={() => setMenuOpen(false)}
             >
               Terms
+            </Link>
+            <Link
+              href="/contact"
+              className={`hover:text-gray-900 ${
+                isActive("/contact") ? "text-green-600 font-medium" : ""
+              }`}
+              onClick={() => setMenuOpen(false)}
+            >
+              Contact
             </Link>
             <Link
               href="/chat"
