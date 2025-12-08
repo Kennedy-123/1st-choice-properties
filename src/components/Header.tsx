@@ -100,51 +100,6 @@ function Header() {
             Home
           </Link>
           <Link
-            href="/contact"
-            className={`hover:text-gray-900 ${
-              isActive("/contact") ? "text-green-600 font-medium" : ""
-            }`}
-            onClick={handleNavigation}
-          >
-            Contact
-          </Link>
-          <Link
-            href="/rent"
-            className={`hover:text-gray-900 ${
-              isActive("/rent") ? "text-green-600 font-medium" : ""
-            }`}
-            onClick={handleNavigation}
-          >
-            For Rent
-          </Link>
-          <Link
-            href="/sale"
-            className={`hover:text-gray-900 ${
-              isActive("/sale") ? "text-green-600 font-medium" : ""
-            }`}
-            onClick={handleNavigation}
-          >
-            For Sale
-          </Link>
-          <Link
-            href="/Favourites"
-            className={`hover:text-gray-900 ${
-              isActive("/Favourites") ? "text-green-600 font-medium" : ""
-            }`}
-            onClick={handleNavigation}
-          >
-            Favourites
-          </Link>
-          <Link
-            href="/my-bookings"
-            className={`hover:text-gray-900 ${
-              isActive("/my-bookings") ? "text-green-600 font-medium" : ""
-            }`}
-            onClick={handleNavigation}
-          >
-            Bookings
-          </Link>
-          <Link
             href="/about"
             className={`hover:text-gray-900 ${
               isActive("/about") ? "text-green-600 font-medium" : ""
@@ -164,6 +119,53 @@ function Header() {
               Profile
             </Link>
           )}
+          <Link
+            href="/rent"
+            className={`hover:text-gray-900 ${
+              isActive("/rent") ? "text-green-600 font-medium" : ""
+            }`}
+            onClick={handleNavigation}
+          >
+            For Rent
+          </Link>
+
+          <Link
+            href="/sale"
+            className={`hover:text-gray-900 ${
+              isActive("/sale") ? "text-green-600 font-medium" : ""
+            }`}
+            onClick={handleNavigation}
+          >
+            For Sale
+          </Link>
+          <Link
+            href="/my-bookings"
+            className={`hover:text-gray-900 ${
+              isActive("/my-bookings") ? "text-green-600 font-medium" : ""
+            }`}
+            onClick={handleNavigation}
+          >
+            Bookings
+          </Link>
+
+          <Link
+            href="/contact"
+            className={`hover:text-gray-900 ${
+              isActive("/contact") ? "text-green-600 font-medium" : ""
+            }`}
+            onClick={handleNavigation}
+          >
+            Contact
+          </Link>
+          <Link
+            href="/Favourites"
+            className={`hover:text-gray-900 ${
+              isActive("/Favourites") ? "text-green-600 font-medium" : ""
+            }`}
+            onClick={handleNavigation}
+          >
+            Favourites
+          </Link>
 
           {userRole === "ADMIN" && (
             <Link
@@ -226,6 +228,28 @@ function Header() {
             >
               Home
             </Link>
+
+            <Link
+              href="/about"
+              className={`hover:text-gray-900 ${
+                isActive("/about") ? "text-green-600 font-medium" : ""
+              }`}
+              onClick={() => setMenuOpen(false)}
+            >
+              About
+            </Link>
+            {isLoggedIn && (
+              <Link
+                href="/profile"
+                className={`hover:text-gray-900 ${
+                  isActive("/profile") ? "text-green-600 font-medium" : ""
+                }`}
+                onClick={() => setMenuOpen(false)}
+              >
+                Profile
+              </Link>
+            )}
+
             <Link
               href="/rent"
               className={`hover:text-gray-900 ${
@@ -245,32 +269,15 @@ function Header() {
               For Sale
             </Link>
             <Link
-              href="/Favourites"
+              href="/my-bookings"
               className={`hover:text-gray-900 ${
-                isActive("/Favourites") ? "text-green-600 font-medium" : ""
+                isActive("/my-bookings") ? "text-green-600 font-medium" : ""
               }`}
               onClick={() => setMenuOpen(false)}
             >
-              Favourites
+              Bookings
             </Link>
-            <Link
-              href="/about"
-              className={`hover:text-gray-900 ${
-                isActive("/about") ? "text-green-600 font-medium" : ""
-              }`}
-              onClick={() => setMenuOpen(false)}
-            >
-              About
-            </Link>
-            <Link
-              href="/terms"
-              className={`hover:text-gray-900 ${
-                isActive("/terms") ? "text-green-600 font-medium" : ""
-              }`}
-              onClick={() => setMenuOpen(false)}
-            >
-              Terms
-            </Link>
+
             <Link
               href="/contact"
               className={`hover:text-gray-900 ${
@@ -280,35 +287,16 @@ function Header() {
             >
               Contact
             </Link>
+
             <Link
-              href="/chat"
+              href="/Favourites"
               className={`hover:text-gray-900 ${
-                isActive("/chat") ? "text-green-600 font-medium" : ""
+                isActive("/Favourites") ? "text-green-600 font-medium" : ""
               }`}
               onClick={() => setMenuOpen(false)}
             >
-              Chat
+              Favourites
             </Link>
-            <Link
-              href="/my-bookings"
-              className={`hover:text-gray-900 ${
-                isActive("/my-bookings") ? "text-green-600 font-medium" : ""
-              }`}
-              onClick={() => setMenuOpen(false)}
-            >
-              Bookings
-            </Link>
-            {isLoggedIn && (
-              <Link
-                href="/profile"
-                className={`hover:text-gray-900 ${
-                  isActive("/profile") ? "text-green-600 font-medium" : ""
-                }`}
-                onClick={() => setMenuOpen(false)}
-              >
-                Profile
-              </Link>
-            )}
 
             {userRole === "ADMIN" && (
               <Link
