@@ -52,22 +52,26 @@ export default function Home() {
               from your Android or Apple device.
             </p>
             <div className="flex gap-4 items-center justify-center">
-              <button className="px-4 py-2 bg-black/70 border border-white/20 rounded text-white flex items-center gap-2">
-                <Image
-                  src={apple}
-                  alt="Google Play icon"
-                  className="h-5 w-5 object-contain"
-                />
-                App Store
-              </button>
-              <button className="px-4 py-2 bg-black/70 border border-white/20 rounded text-white flex items-center gap-2">
-                <Image
-                  src={playStore}
-                  alt="Google Play icon"
-                  className="h-5 w-5 object-contain"
-                />
-                Google Play
-              </button>
+              <a href="https://apps.apple.com/us/app/choice-property/id6753912857?platform=iphone" target="_blank">
+                <button className="px-4 py-2 bg-black/70 border border-white/20 rounded text-white flex items-center gap-2 hover:cursor-pointer">
+                  <Image
+                    src={apple}
+                    alt="Google Play icon"
+                    className="h-5 w-5 object-contain"
+                  />
+                  App Store
+                </button>
+              </a>
+              <a href="https://play.google.com/store/apps/details?id=com.choiceproperty.diim" target="_blank">
+                <button className="px-4 py-2 bg-black/70 border border-white/20 rounded text-white flex items-center gap-2 hover:cursor-pointer">
+                  <Image
+                    src={playStore}
+                    alt="Google Play icon"
+                    className="h-5 w-5 object-contain"
+                  />
+                  Google Play
+                </button>
+              </a>
             </div>
           </div>
         </div>
