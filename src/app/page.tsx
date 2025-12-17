@@ -1,11 +1,12 @@
 "use client";
+
 import Image from "next/image";
 import Hero from "@/components/Hero";
 import ApartmentList from "@/components/ApartmentList";
 import { useApartments } from "@/hooks/useApartments";
 import playStore from "./image/playstore.png";
 import apple from "./image/apple.png";
-
+import VideoSection from "@/components/VideoSection";
 export default function Home() {
   const { apartments, loading, error } = useApartments();
 
@@ -13,6 +14,9 @@ export default function Home() {
     <main className="min-h-screen bg-white text-gray-800">
       {/* Hero */}
       <Hero text="in Nigeria" />
+
+      {/* Video Section */}
+      <VideoSection />
 
       {/* Featured Apartments */}
       <section className="py-12 bg-gray-50">
@@ -52,7 +56,10 @@ export default function Home() {
               from your Android or Apple device.
             </p>
             <div className="flex gap-4 items-center justify-center">
-              <a href="https://apps.apple.com/us/app/choice-property/id6753912857?platform=iphone" target="_blank">
+              <a
+                href="https://apps.apple.com/us/app/choice-property/id6753912857?platform=iphone"
+                target="_blank"
+              >
                 <button className="px-4 py-2 bg-black/70 border border-white/20 rounded text-white flex items-center gap-2 hover:cursor-pointer">
                   <Image
                     src={apple}
@@ -62,7 +69,10 @@ export default function Home() {
                   App Store
                 </button>
               </a>
-              <a href="https://play.google.com/store/apps/details?id=com.choiceproperty.diim" target="_blank">
+              <a
+                href="https://play.google.com/store/apps/details?id=com.choiceproperty.diim"
+                target="_blank"
+              >
                 <button className="px-4 py-2 bg-black/70 border border-white/20 rounded text-white flex items-center gap-2 hover:cursor-pointer">
                   <Image
                     src={playStore}
