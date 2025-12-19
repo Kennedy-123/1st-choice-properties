@@ -4,10 +4,10 @@ import React from "react";
 import { useParams } from "next/navigation";
 import { useApartmentById } from "@/hooks/useApartmentById";
 import { useFavoriteApartment } from "@/hooks/useFavoriteApartment";
-import Image from "next/image";
 import Link from "next/link";
 import Loader from "@/components/Loader";
 import BookingForm from "@/components/BookingForm";
+import ImageSlider from "@/components/ImageSlider";
 
 export default function ApartmentDetailPage() {
   const params = useParams();
@@ -83,43 +83,10 @@ export default function ApartmentDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column: Gallery and Details */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Gallery Section */}
-          <div className="space-y-4">
-            {apartment.gallery && apartment.gallery.length > 0 ? (
-            <>
-              <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden">
-                <Image
-                  src={apartment.gallery[0].imageUrl}
-                  alt={apartment.title}
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              </div>
-              {apartment.gallery.length > 1 && (
-                <div className="grid grid-cols-3 gap-4">
-                  {apartment.gallery.slice(1, 4).map((img) => (
-                    <div
-                      key={img.id}
-                      className="relative w-full aspect-[4/3] rounded-lg overflow-hidden"
-                    >
-                      <Image
-                        src={img.imageUrl}
-                        alt={apartment.title}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden bg-gray-200 flex items-center justify-center">
-              <p className="text-gray-500">No images available</p>
-            </div>
-          )}
-          </div>
+          <ImageSlider 
+          images={apartment.gallery || []} 
+          title={apartment.title} 
+        />
 
           {/* Details Section */}
           <div className="space-y-6">

@@ -6,14 +6,14 @@ import { Apartment } from "@/lib/types";
 import { useAdminFAQs } from "@/hooks/useAdminFAQs";
 import { useAdminBookings } from "@/hooks/useAdminBookings";
 import { useApartments } from "@/hooks/useApartments";
-import { Home, FolderOpen, HelpCircle, Calendar, X } from "lucide-react";
+import { Home, FolderOpen, HelpCircle, Calendar } from "lucide-react";
 import ApartmentsTab from "@/components/admin/ApartmentsTab";
 import CategoriesTab from "@/components/admin/CategoriesTab";
 import FAQsTab from "@/components/admin/FAQsTab";
 import BookingsTab from "@/components/admin/BookingsTab";
 import CategoryModal from "@/components/admin/CategoryModal";
 import FAQModal from "@/components/admin/FAQModal";
-import Image from "next/image";
+import ApartmentModal from "@/components/admin/ApartmentModal";
 import api from "@/lib/axiosInstance";
 
 type TabType = "apartments" | "categories" | "faqs" | "bookings";
@@ -418,268 +418,34 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Apartment Modal */}
-      {showApartmentModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center p-6 border-b">
-              <h3 className="text-xl font-semibold">Add New Apartment</h3>
-              <button
-                onClick={() => setShowApartmentModal(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-            <form onSubmit={handleCreateApartment} className="p-6 space-y-4">
-              {apartmentError && (
-                <div className="p-3 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">
-                  {apartmentError}
-                </div>
-              )}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Title
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={apartmentForm.title}
-                  onChange={(e) =>
-                    setApartmentForm({
-                      ...apartmentForm,
-                      title: e.target.value,
-                    })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
-                </label>
-                <textarea
-                  required
-                  rows={4}
-                  value={apartmentForm.description}
-                  onChange={(e) =>
-                    setApartmentForm({
-                      ...apartmentForm,
-                      description: e.target.value,
-                    })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                />
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Location
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={apartmentForm.location}
-                    onChange={(e) =>
-                      setApartmentForm({
-                        ...apartmentForm,
-                        location: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Price
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    value={apartmentForm.price}
-                    onChange={(e) =>
-                      setApartmentForm({
-                        ...apartmentForm,
-                        price: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Payment Plan
-                  </label>
-                  <select
-                    required
-                    value={apartmentForm.paymentPlan}
-                    onChange={(e) =>
-                      setApartmentForm({
-                        ...apartmentForm,
-                        paymentPlan: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  >
-                    <option value="ANNUAL">ANNUAL</option>
-                    <option value="MONTHLY">MONTHLY</option>
-                  </select>
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Apartment Category
-                </label>
-                <select
-                  required
-                  value={apartmentForm.apartmentCategoryId}
-                  onChange={(e) =>
-                    setApartmentForm({
-                      ...apartmentForm,
-                      apartmentCategoryId: e.target.value,
-                    })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                >
-                  <option value="">Select a category</option>
-                  {categoriesLoading && (
-                    <option disabled>Loading categories...</option>
-                  )}
-                  {categoriesError && (
-                    <option disabled>{categoriesError}</option>
-                  )}
-                  {!categoriesLoading &&
-                    !categoriesError &&
-                    categories.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </option>
-                    ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Features{" "}
-                  <span className="text-gray-500 text-xs">
-                    (comma-separated)
-                  </span>
-                </label>
-                <input
-                  type="text"
-                  value={apartmentForm.features}
-                  onChange={(e) =>
-                    setApartmentForm({
-                      ...apartmentForm,
-                      features: e.target.value,
-                    })
-                  }
-                  placeholder="e.g., Bedrooms:3, Pool, WiFi"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Gallery Images
-                </label>
-                <textarea
-                  rows={3}
-                  value={apartmentForm.gallery}
-                  onChange={(e) =>
-                    setApartmentForm({
-                      ...apartmentForm,
-                      gallery: e.target.value,
-                    })
-                  }
-                  placeholder="Enter image URLs separated by commas"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent mb-2"
-                />
-
-                {/* Image previews */}
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {apartmentForm.gallery
-                    .split(",")
-                    .filter((url) => url.trim())
-                    .map((url, i) => (
-                      <div key={i} className="relative group">
-                        <div className="h-20 w-20 relative">
-                          <Image
-                            src={url.trim()}
-                            alt={`Preview ${i}`}
-                            fill
-                            className="object-cover rounded border border-gray-200"
-                            onError={() => {
-                              const urls = apartmentForm.gallery
-                                .split(",")
-                                .filter((_, idx) => idx !== i);
-                              setApartmentForm({
-                                ...apartmentForm,
-                                gallery: urls.join(","),
-                              });
-                            }}
-                            unoptimized={true} // For external URLs
-                          />
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const urls = apartmentForm.gallery
-                              .split(",")
-                              .filter((_, idx) => idx !== i);
-                            setApartmentForm({
-                              ...apartmentForm,
-                              gallery: urls.join(","),
-                            });
-                          }}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Public IDs{" "}
-                  <span className="text-gray-500 text-xs">
-                    (comma-separated)
-                  </span>
-                </label>
-                <input
-                  type="text"
-                  value={apartmentForm.publicIds}
-                  onChange={(e) =>
-                    setApartmentForm({
-                      ...apartmentForm,
-                      publicIds: e.target.value,
-                    })
-                  }
-                  placeholder="e.g., public-id-1, public-id-2"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                />
-              </div>
-              <div className="flex gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowApartmentModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={apartmentHook.loading}
-                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-                >
-                  {apartmentHook.loading ? "Creating..." : "Create Apartment"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <ApartmentModal
+        isOpen={showApartmentModal}
+        onClose={() => {
+          setShowApartmentModal(false);
+          setApartmentForm({
+            title: "",
+            description: "",
+            location: "",
+            price: "",
+            paymentPlan: "MONTHLY",
+            apartmentCategoryId: "",
+            listingType: "rent",
+            features: "",
+            gallery: "",
+            publicIds: "",
+          });
+          setEditingApartment(null);
+        }}
+        onSubmit={handleCreateApartment}
+        form={apartmentForm}
+        setForm={setApartmentForm}
+        error={apartmentError}
+        loading={apartmentHook.loading}
+        categories={categories}
+        categoriesLoading={categoriesLoading}
+        categoriesError={categoriesError}
+        editingApartment={editingApartment}
+      />
 
       {/* Category Modal */}
       <CategoryModal

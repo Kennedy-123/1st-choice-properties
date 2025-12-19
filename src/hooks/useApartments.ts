@@ -26,6 +26,7 @@ export function useApartments() {
 
       setApartments(forRent);
       setError(null);
+      console.log(forRent)
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         setError(err.response?.data?.message || "Failed to load apartments");
