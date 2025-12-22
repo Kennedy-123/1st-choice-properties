@@ -8,6 +8,12 @@ interface ImageSliderProps {
   title: string;
 }
 
+// Helper function to detect if URL is a video
+const isVideo = (url: string): boolean => {
+  const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.avi', '.wmv', '.flv', '.mkv'];
+  return videoExtensions.some(ext => url.toLowerCase().includes(ext));
+};
+
 export default function ImageSlider({ images, title }: ImageSliderProps) {
   console.log('ImageSlider received images:', images);
   console.log('ImageSlider received title:', title);
@@ -17,12 +23,23 @@ export default function ImageSlider({ images, title }: ImageSliderProps) {
   const [startX, setStartX] = useState(0);
   const [translateX, setTranslateX] = useState(0);
   const sliderRef = useRef<HTMLDivElement>(null);
+  const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
+
+  const pauseAllVideos = () => {
+    Object.values(videoRefs.current).forEach(video => {
+      if (video && !video.paused) {
+        video.pause();
+      }
+    });
+  };
 
   const handlePrev = () => {
+    pauseAllVideos();
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
 
   const handleNext = () => {
+    pauseAllVideos();
     setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
@@ -83,6 +100,7 @@ export default function ImageSlider({ images, title }: ImageSliderProps) {
   };
 
   const goToSlide = (index: number) => {
+    pauseAllVideos();
     setCurrentIndex(index);
   };
 
@@ -130,14 +148,28 @@ export default function ImageSlider({ images, title }: ImageSliderProps) {
           {images.map((img, index) => (
             <div key={img.id} className="w-full h-full flex-shrink-0">
               <div className="relative w-full h-full">
-                <Image
-                  src={img.imageUrl}
-                  alt={`${title} - Image ${index + 1}`}
-                  fill
-                  className="object-cover"
-                  priority={index === 0}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-                />
+                {isVideo(img.imageUrl) ? (
+                  <video
+                    ref={(el) => { videoRefs.current[img.id] = el; }}
+                    src={img.imageUrl}
+                    className="w-full h-full object-cover"
+                    controls
+                    muted
+                    preload="metadata"
+                    aria-label={`${title} - Video ${index + 1}`}
+                  >
+                    Your browser does not support the video tag.
+                  </video>
+                ) : (
+                  <Image
+                    src={img.imageUrl}
+                    alt={`${title} - Image ${index + 1}`}
+                    fill
+                    className="object-cover"
+                    priority={index === 0}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+                  />
+                )}
               </div>
             </div>
           ))}
@@ -184,12 +216,29 @@ export default function ImageSlider({ images, title }: ImageSliderProps) {
                   : 'border-gray-300 hover:border-gray-400'
               }`}
             >
-              <Image
-                src={img.imageUrl}
-                alt={`Thumbnail ${index + 1}`}
-                fill
-                className="object-cover"
-              />
+              {isVideo(img.imageUrl) ? (
+                <div className="relative w-full h-full">
+                  <video
+                    src={img.imageUrl}
+                    className="w-full h-full object-cover"
+                    muted
+                    preload="metadata"
+                    aria-label={`Video thumbnail ${index + 1}`}
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                    <div className="w-8 h-8 bg-white/80 rounded-full flex items-center justify-center">
+                      <div className="w-0 h-0 border-l-[8px] border-l-gray-800 border-y-[4px] border-y-transparent ml-1"></div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <Image
+                  src={img.imageUrl}
+                  alt={`Thumbnail ${index + 1}`}
+                  fill
+                  className="object-cover"
+                />
+              )}
             </button>
           ))}
         </div>

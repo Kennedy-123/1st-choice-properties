@@ -31,6 +31,12 @@ interface ApartmentModalProps {
   editingApartment: Apartment | null;
 }
 
+// Helper function to detect if URL is a video
+const isVideo = (url: string): boolean => {
+  const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.avi', '.wmv', '.flv', '.mkv'];
+  return videoExtensions.some(ext => url.toLowerCase().includes(ext));
+};
+
 export default function ApartmentModal({
   isOpen,
   onClose,
@@ -233,21 +239,38 @@ export default function ApartmentModal({
                 .map((url, i) => (
                   <div key={i} className="relative group">
                     <div className="h-20 w-20 relative">
-                      <Image
-                        src={url.trim()}
-                        alt={`Preview ${i}`}
-                        fill
-                        className="object-cover rounded border border-gray-200"
-                        onError={() => {
-                          const urls = form.gallery
-                            .split(",")
-                            .filter((u) => u.trim() !== url.trim());
-                          setForm({
-                            ...form,
-                            gallery: urls.join(","),
-                          });
-                        }}
-                      />
+                      {isVideo(url.trim()) ? (
+                        <video
+                          src={url.trim()}
+                          className="w-full h-full object-cover rounded border border-gray-200"
+                          muted
+                          preload="metadata"
+                          aria-label={`Video preview ${i}`}
+                        />
+                      ) : (
+                        <Image
+                          src={url.trim()}
+                          alt={`Preview ${i}`}
+                          fill
+                          className="object-cover rounded border border-gray-200"
+                          onError={() => {
+                            const urls = form.gallery
+                              .split(",")
+                              .filter((u) => u.trim() !== url.trim());
+                            setForm({
+                              ...form,
+                              gallery: urls.join(","),
+                            });
+                          }}
+                        />
+                      )}
+                      {isVideo(url.trim()) && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded">
+                          <div className="w-6 h-6 bg-white/80 rounded-full flex items-center justify-center">
+                            <div className="w-0 h-0 border-l-[6px] border-l-gray-800 border-y-[3px] border-y-transparent ml-0.5"></div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
