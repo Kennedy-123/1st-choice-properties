@@ -55,7 +55,7 @@ export default function ApartmentList({ apartments, loading, error }: ApartmentL
               <p className="text-white text-sm">{apartment.location}</p>
             </div>
             <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
-              {apartment.paymentPlan}
+              {apartment.apartmentCategory?.name === "For Rent" ? apartment.paymentPlan : "Sale"}
             </div>
           </div>
           <div className="p-4">

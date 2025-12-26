@@ -16,6 +16,7 @@ type RentPropertyCardProps = {
   parking: string;
   price: string;
   paymentPlan?: string;
+  apartmentCategory?: string
 };
 
 function RentPropertyCard({
@@ -28,6 +29,7 @@ function RentPropertyCard({
   parking,
   price,
   paymentPlan,
+  apartmentCategory
 }: RentPropertyCardProps) {
   const [isFavorited, setIsFavorited] = useState(false);
   const { addToFavorites, loading, message, error } = useFavoriteApartment();
@@ -40,7 +42,7 @@ function RentPropertyCard({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col w-full sm:w-[90%] md:w-[80%] lg:w-[72%] mx-auto my-6">
+    <div className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col w-full max-w-2xl mx-auto my-6">
       {/* Image */}
       <div className="relative w-full h-48 md:h-64 lg:h-72">
         <Link href={`/apartments/${id}`}>
@@ -73,7 +75,7 @@ function RentPropertyCard({
         </div>
 
         <div className="font-bold text-green-600 text-lg md:text-xl">
-          {price} {paymentPlan && `/ ${paymentPlan}`}
+          {price} {apartmentCategory === 'For Rent' && paymentPlan ? `/ ${paymentPlan}` : ''}
         </div>
 
         <div className="flex items-center text-gray-500 text-sm md:text-base gap-1">

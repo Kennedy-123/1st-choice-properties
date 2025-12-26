@@ -183,13 +183,6 @@ export default function AdminDashboard() {
   const handleCreateApartment = async (e: React.FormEvent) => {
     e.preventDefault();
     setApartmentError(null);
-    if (
-      apartmentForm.publicIds &&
-      apartmentForm.publicIds.trim().length > 255
-    ) {
-      setApartmentError("Public IDs must be 255 characters or fewer");
-      return;
-    }
     try {
       if (editingApartment) {
         await apartmentHook.updateApartment(editingApartment.id, {
@@ -251,7 +244,7 @@ export default function AdminDashboard() {
       });
       setEditingApartment(null);
       // Reload the page to show the latest changes
-      window.location.reload();
+      // window.location.reload();
     } catch (error: unknown) {
       let errorMessage = "Failed to save apartment. Please try again.";
       if (error && typeof error === "object" && "response" in error) {

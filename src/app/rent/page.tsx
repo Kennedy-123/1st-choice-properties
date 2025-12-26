@@ -39,6 +39,7 @@ function Page() {
                 parking={apt.features[2]?.featureName || "N/A"}
                 price={`₦${Number(apt.price).toLocaleString()}`}
                 paymentPlan={apt.paymentPlan}
+                apartmentCategory={apt.apartmentCategory?.name || ""}
               />
             ))}
           </div>
