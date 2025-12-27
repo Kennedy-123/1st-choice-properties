@@ -15,9 +15,6 @@ const isVideo = (url: string): boolean => {
 };
 
 export default function ImageSlider({ images, title }: ImageSliderProps) {
-  console.log('ImageSlider received images:', images);
-  console.log('ImageSlider received title:', title);
-  
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);

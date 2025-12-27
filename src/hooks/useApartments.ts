@@ -6,6 +6,7 @@ import api from "@/lib/axiosInstance";
 
 export function useApartments() {
   const [apartments, setApartments] = useState<Apartment[]>([]);
+  const [allApartments, setAllApartments] = useState<Apartment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,8 +26,8 @@ export function useApartments() {
       );
 
       setApartments(forRent);
+      setAllApartments(fetched)
       setError(null);
-      console.log(fetched)
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         setError(err.response?.data?.message || "Failed to load apartments");
@@ -68,5 +69,6 @@ export function useApartments() {
     error,
     refetch: fetchApartments,
     deleteApartment,
+    allApartments
   };
 }

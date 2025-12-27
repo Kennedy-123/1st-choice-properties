@@ -69,7 +69,7 @@ export default function AdminDashboard() {
   const [showCategoryModal, setShowCategoryModal] = useState(false);
 
   // Use the useApartments hook to fetch all apartments
-  const { apartments, loading, error } = useApartments();
+  const { loading, error, allApartments } = useApartments();
   const [showFAQModal, setShowFAQModal] = useState(false);
   const [editingFAQ, setEditingFAQ] = useState<{
     id: string;
@@ -175,6 +175,7 @@ export default function AdminDashboard() {
   const handleDeleteApartment = async (id: string) => {
     try {
       await apartmentHook.deleteApartment(id);
+      window.location.reload()
     } catch (error) {
       console.error("Failed to delete apartment:", error);
     }
@@ -244,7 +245,7 @@ export default function AdminDashboard() {
       });
       setEditingApartment(null);
       // Reload the page to show the latest changes
-      // window.location.reload();
+      window.location.reload();
     } catch (error: unknown) {
       let errorMessage = "Failed to save apartment. Please try again.";
       if (error && typeof error === "object" && "response" in error) {
@@ -368,7 +369,7 @@ export default function AdminDashboard() {
             <ApartmentsTab
               onAddClick={() => setShowApartmentModal(true)}
               onDelete={handleDeleteApartment}
-              apartments={apartments}
+              apartments={allApartments}
               loading={loading}
               error={error}
             />

@@ -30,7 +30,6 @@ export const useAdminApartments = () => {
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
       setError(error.response?.data?.message || "Failed to create apartment");
-      console.log(error)
       throw err;
     } finally {
       setLoading(false);
@@ -59,13 +58,11 @@ export const useAdminApartments = () => {
     setError(null);
     setMessage(null);
     try {
-      console.log(id)
       await api.delete(`/apartments/${id}`);
       setMessage("Apartment deleted successfully!");
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
       setError(error.response?.data?.message || "Failed to delete apartment");
-      console.log(error.response?.data?.message)
       throw err;
     } finally {
       setLoading(false);

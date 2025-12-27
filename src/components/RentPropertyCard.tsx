@@ -70,7 +70,7 @@ function RentPropertyCard({
       </div>
       {/* Content */}
       <div className="p-4 flex flex-col gap-2 flex-1">
-        <div className="font-semibold text-lg md:text-xl text-gray-900">
+        <div className="font-semibold text-lg md:text-xl text-gray-900 truncate" title={title}>
           {title}
         </div>
 
@@ -78,19 +78,21 @@ function RentPropertyCard({
           {price} {apartmentCategory === 'For Rent' && paymentPlan ? `/ ${paymentPlan}` : ''}
         </div>
 
-        <div className="flex items-center text-gray-500 text-sm md:text-base gap-1">
-          <FaMapMarkerAlt className="text-green-600" />
-          {location}
+        <div className="flex items-center text-gray-500 text-sm md:text-base gap-1 overflow-hidden">
+          <FaMapMarkerAlt className="text-green-600 flex-shrink-0" />
+          <span className="truncate" title={location}>
+            {location}
+          </span>
         </div>
 
-        <div className="flex flex-wrap items-center justify-start mt-2 gap-2 md:gap-4 text-gray-700 text-sm md:text-base">
-          <span className="flex items-center gap-1 bg-gray-300 p-1 rounded-sm">
+        <div className="flex items-center justify-start mt-2 gap-2 text-gray-700 text-sm md:text-base overflow-hidden">
+          <span className="flex-shrink-0 flex items-center gap-1 bg-gray-300 px-2 py-1 rounded-sm whitespace-nowrap overflow-hidden text-ellipsis max-w-[33%]">
             {beds}
           </span>
-          <span className="flex items-center gap-1 bg-gray-300 p-1 rounded-sm">
+          <span className="flex-shrink-0 flex items-center gap-1 bg-gray-300 px-2 py-1 rounded-sm whitespace-nowrap overflow-hidden text-ellipsis max-w-[33%]">
             {baths}
           </span>
-          <span className="flex items-center gap-1 bg-gray-300 p-1 rounded-sm">
+          <span className="flex-shrink-0 flex items-center gap-1 bg-gray-300 px-2 py-1 rounded-sm whitespace-nowrap overflow-hidden text-ellipsis max-w-[33%]">
             {parking}
           </span>
         </div>
