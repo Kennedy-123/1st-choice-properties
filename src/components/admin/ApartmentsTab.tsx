@@ -2,7 +2,10 @@
 
 import React, { useState } from "react";
 import { Plus, Edit, Trash2, Loader2, X } from "lucide-react";
+import Image from "next/image";
 import { Apartment } from "@/lib/types";
+import { useApartmentById } from "@/hooks/useApartmentById";
+import { useUpdateApartment } from "@/hooks/useUpdateApartment";
 
 interface ApartmentsTabProps {
   onAddClick: () => void;
@@ -21,11 +24,316 @@ export default function ApartmentsTab({
 }: ApartmentsTabProps) {
   const [apartmentToDelete, setApartmentToDelete] = useState<Apartment | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [apartmentToEdit, setApartmentToEdit] = useState<string | null>(null);
 
   const handleDeleteClick = (apartment: Apartment, e: React.MouseEvent) => {
     e.stopPropagation();
     setApartmentToDelete(apartment);
   };
+
+  const handleEditClick = (apartmentId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setApartmentToEdit(apartmentId);
+  };
+
+  const handleCloseEditModal = () => {
+    setApartmentToEdit(null);
+  };
+
+  interface EditApartmentModalProps {
+    apartmentId: string;
+    onClose: () => void;
+  }
+
+  function EditApartmentModal({ apartmentId, onClose }: EditApartmentModalProps) {
+    const { apartment, loading, error } = useApartmentById(apartmentId);
+    const { updateApartment, loading: updating, error: updateError, success } = useUpdateApartment();
+    
+    const [isEditing, setIsEditing] = useState(false);
+    const [validationError, setValidationError] = useState<string | null>(null);
+    const [formData, setFormData] = useState({
+      title: "",
+      description: "",
+      location: "",
+      price: "",
+      paymentPlan: "",
+      apartmentCategoryId: "",
+    });
+
+    // Update form data when apartment loads
+    React.useEffect(() => {
+      if (apartment) {
+        setFormData({
+          title: apartment.title,
+          description: apartment.description,
+          location: apartment.location,
+          price: apartment.price,
+          paymentPlan: apartment.paymentPlan,
+          apartmentCategoryId: apartment.apartmentCategory?.id || "",
+        });
+      }
+    }, [apartment]);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+      const { name, value } = e.target;
+      setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleEditToggle = () => {
+      setIsEditing(!isEditing);
+      if (isEditing && apartment) {
+        // Reset form data when canceling edit
+        setFormData({
+          title: apartment.title,
+          description: apartment.description,
+          location: apartment.location,
+          price: apartment.price,
+          paymentPlan: apartment.paymentPlan,
+          apartmentCategoryId: apartment.apartmentCategory?.id || "",
+        });
+      }
+    };
+
+    const handleSave = async () => {
+      // Clear previous validation error
+      setValidationError(null);
+      
+      // Validate price is a valid number
+      const priceValue = parseFloat(formData.price);
+      if (isNaN(priceValue) || priceValue < 0) {
+        setValidationError("Price must be a valid number greater than or equal to 0");
+        return;
+      }
+      
+      const updateData = {
+        ...formData,
+        price: priceValue.toString(), // Send as string representation of number
+      };
+      
+      const result = await updateApartment(apartmentId, updateData);
+      if (result) {
+        setIsEditing(false);
+        // Optionally close modal after successful update
+        setTimeout(() => onClose(), 1500);
+      }
+    };
+
+    return (
+      <div 
+        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        onClick={onClose}
+      >
+        <div 
+          className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-semibold text-gray-900">Apartment Details</h3>
+            <div className="flex items-center gap-2">
+              {apartment && (
+                <button
+                  onClick={handleEditToggle}
+                  className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  {isEditing ? "Cancel" : "Edit"}
+                </button>
+              )}
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-gray-500"
+                aria-label="Close"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Success Message */}
+          {success && (
+            <div className="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+              <p className="text-sm text-green-700">Apartment updated successfully!</p>
+            </div>
+          )}
+
+          {/* Update Error */}
+          {updateError && (
+            <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+              <p className="text-sm text-red-700">{updateError}</p>
+            </div>
+          )}
+
+          {/* Validation Error */}
+          {validationError && (
+            <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+              <p className="text-sm text-red-700">{validationError}</p>
+            </div>
+          )}
+
+          {loading && (
+            <div className="flex justify-center items-center h-64">
+              <Loader2 className="animate-spin h-8 w-8 text-gray-500" />
+              <span className="ml-2 text-gray-600">Loading apartment details...</span>
+            </div>
+          )}
+
+          {error && (
+            <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          )}
+
+          {apartment && (
+            <div className="space-y-6">
+              {/* Basic Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="text-sm font-medium text-gray-900 mb-2">Title</h4>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="title"
+                      value={formData.title}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-600">{apartment.title}</p>
+                  )}
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-gray-900 mb-2">Location</h4>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="location"
+                      value={formData.location}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-600">{apartment.location}</p>
+                  )}
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-gray-900 mb-2">Price</h4>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="price"
+                      value={formData.price}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-600">{apartment.price}</p>
+                  )}
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-gray-900 mb-2">Payment Plan</h4>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="paymentPlan"
+                      value={formData.paymentPlan}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  ) : (
+                    <p className="text-sm text-gray-600">{apartment.paymentPlan}</p>
+                  )}
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-gray-900 mb-2">Category</h4>
+                  <p className="text-sm text-gray-600">{apartment.apartmentCategory?.name || "N/A"}</p>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div>
+                <h4 className="text-sm font-medium text-gray-900 mb-2">Description</h4>
+                {isEditing ? (
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    rows={4}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                ) : (
+                  <p className="text-sm text-gray-600 whitespace-pre-wrap">{apartment.description}</p>
+                )}
+              </div>
+
+              {/* Features */}
+              {apartment.features && apartment.features.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-medium text-gray-900 mb-2">Features</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {apartment.features.map((feature) => (
+                      <span 
+                        key={feature.id}
+                        className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
+                      >
+                        {feature.featureName}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Gallery */}
+              {apartment.gallery && apartment.gallery.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-medium text-gray-900 mb-2">Gallery Images</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {apartment.gallery.map((image) => (
+                      <div key={image.id} className="relative group">
+                        <Image
+                          src={image.imageUrl}
+                          alt="Apartment image"
+                          width={200}
+                          height={128}
+                          className="w-full h-32 object-cover rounded-lg"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex justify-end space-x-3 pt-4 border-t">
+                {isEditing && (
+                  <button
+                    type="button"
+                    onClick={handleSave}
+                    disabled={updating}
+                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+                  >
+                    {updating ? (
+                      <>
+                        <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4 inline" />
+                        Saving...
+                      </>
+                    ) : (
+                      'Save Changes'
+                    )}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  {isEditing ? 'Cancel' : 'Close'}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   const handleConfirmDelete = async () => {
     if (!apartmentToDelete) return;
@@ -171,7 +479,10 @@ export default function ApartmentsTab({
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button className="text-blue-600 hover:text-blue-900 mr-4">
+                    <button 
+                      onClick={(e) => handleEditClick(apartment.id, e)}
+                      className="text-blue-600 hover:text-blue-900 mr-4"
+                    >
                       <Edit className="w-4 h-4" />
                     </button>
                     <button 
@@ -241,6 +552,14 @@ export default function ApartmentsTab({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Edit Apartment Modal */}
+      {apartmentToEdit && (
+        <EditApartmentModal 
+          apartmentId={apartmentToEdit} 
+          onClose={handleCloseEditModal} 
+        />
       )}
     </div>
   );

@@ -26,10 +26,12 @@ export const useAdminApartments = () => {
     try {
       const response = await api.post("/apartments", data);
       setMessage("Apartment created successfully!");
+      console.log('created')
       return response.data;
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
       setError(error.response?.data?.message || "Failed to create apartment");
+      console.log(error)
       throw err;
     } finally {
       setLoading(false);

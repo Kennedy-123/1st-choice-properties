@@ -15,6 +15,7 @@ import CategoryModal from "@/components/admin/CategoryModal";
 import FAQModal from "@/components/admin/FAQModal";
 import ApartmentModal from "@/components/admin/ApartmentModal";
 import api from "@/lib/axiosInstance";
+// import { logAllSupabaseUrls } from "@/utils/list-urls";
 
 type TabType = "apartments" | "categories" | "faqs" | "bookings";
 
@@ -41,6 +42,7 @@ interface FAQFormData {
 }
 
 export default function AdminDashboard() {
+  // logAllSupabaseUrls();
   const [categories, setCategories] = useState<{ id: string; name: string }[]>(
     []
   );
@@ -245,7 +247,7 @@ export default function AdminDashboard() {
       });
       setEditingApartment(null);
       // Reload the page to show the latest changes
-      window.location.reload();
+      // window.location.reload();
     } catch (error: unknown) {
       let errorMessage = "Failed to save apartment. Please try again.";
       if (error && typeof error === "object" && "response" in error) {
