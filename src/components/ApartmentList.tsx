@@ -51,8 +51,8 @@ export default function ApartmentList({ apartments, loading, error }: ApartmentL
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-              <h3 className="text-white font-semibold text-lg">{apartment.title}</h3>
-              <p className="text-white text-sm">{apartment.location}</p>
+              <h3 className="text-white font-semibold text-lg truncate">{apartment.title}</h3>
+              <p className="text-white text-sm truncate">{apartment.location}</p>
             </div>
             <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded">
               {apartment.apartmentCategory?.name === "For Rent" ? apartment.paymentPlan : "Sale"}
@@ -60,21 +60,21 @@ export default function ApartmentList({ apartments, loading, error }: ApartmentL
           </div>
           <div className="p-4">
             <div className="flex justify-between items-center">
-              <span className="text-xl font-bold text-gray-900">
+              <span className="text-xl font-bold text-gray-900 truncate">
                 ₦{parseInt(apartment.price).toLocaleString()}
               </span>
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-gray-600 truncate">
                 {apartment.apartmentCategory?.name}
               </span>
             </div>
-            <p className="mt-2 text-gray-600 line-clamp-2">{apartment.description}</p>
+            <p className="mt-2 text-gray-600 line-clamp-2 truncate">{apartment.description}</p>
             <div className="mt-4 flex justify-between items-center">
               <button className="text-green-600 hover:text-green-800 text-sm font-medium">
-                View Details
+                View
               </button>
               <div className="flex space-x-1">
                 {apartment.features?.slice(0, 3).map((feature) => (
-                  <span key={feature.id} className="text-xs bg-gray-100 px-2 py-1 rounded">
+                  <span key={feature.id} className="text-xs bg-gray-100 px-2 py-1 rounded truncate">
                     {feature.featureName}
                   </span>
                 ))}

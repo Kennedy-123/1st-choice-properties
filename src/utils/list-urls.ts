@@ -6,7 +6,7 @@ const supabaseAdmin = createClient(
 );
 
 const bucketName = "1st-choice-properties-images";
-const folderPath = "3-BEDROOM-FLATS";
+const folderPath = "2-BEDROOM-FLATS";
 
 export async function logAllSupabaseUrls() {
   try {
