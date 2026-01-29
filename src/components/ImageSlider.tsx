@@ -19,8 +19,53 @@ export default function ImageSlider({ images, title }: ImageSliderProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [translateX, setTranslateX] = useState(0);
+  const [imageDimensions, setImageDimensions] = useState<{ [key: string]: { width: number; height: number } }>({});
+  const [videoDimensions, setVideoDimensions] = useState<{ [key: string]: { width: number; height: number } }>({});
   const sliderRef = useRef<HTMLDivElement>(null);
   const videoRefs = useRef<{ [key: string]: HTMLVideoElement | null }>({});
+
+  // Function to determine object-fit based on media aspect ratio
+  const getObjectFit = (mediaId: string, isVideoMedia: boolean = false): string => {
+    const dimensions = isVideoMedia ? videoDimensions[mediaId] : imageDimensions[mediaId];
+    if (!dimensions) return 'object-cover';
+    
+    const aspectRatio = dimensions.width / dimensions.height;
+    // If media is portrait (height > width), use object-contain to show full content
+    // If media is landscape or square, use object-cover for better fill
+    return aspectRatio < 1 ? 'object-contain' : 'object-cover';
+  };
+
+  // Load image dimensions
+  useEffect(() => {
+    images.forEach((img) => {
+      if (!isVideo(img.imageUrl) && !imageDimensions[img.id]) {
+        const imgElement = new window.Image();
+        imgElement.onload = () => {
+          setImageDimensions(prev => ({
+            ...prev,
+            [img.id]: { width: imgElement.naturalWidth, height: imgElement.naturalHeight }
+          }));
+        };
+        imgElement.src = img.imageUrl;
+      }
+    });
+  }, [images, imageDimensions]);
+
+  // Load video dimensions
+  useEffect(() => {
+    images.forEach((img) => {
+      if (isVideo(img.imageUrl) && !videoDimensions[img.id]) {
+        const videoElement = document.createElement('video');
+        videoElement.addEventListener('loadedmetadata', () => {
+          setVideoDimensions(prev => ({
+            ...prev,
+            [img.id]: { width: videoElement.videoWidth, height: videoElement.videoHeight }
+          }));
+        });
+        videoElement.src = img.imageUrl;
+      }
+    });
+  }, [images, videoDimensions]);
 
   const pauseAllVideos = () => {
     Object.values(videoRefs.current).forEach(video => {
@@ -149,7 +194,7 @@ export default function ImageSlider({ images, title }: ImageSliderProps) {
                   <video
                     ref={(el) => { videoRefs.current[img.id] = el; }}
                     src={img.imageUrl}
-                    className="w-full h-full object-cover"
+                    className={`w-full h-full ${getObjectFit(img.id, true)}`}
                     controls
                     muted
                     preload="metadata"
@@ -162,7 +207,7 @@ export default function ImageSlider({ images, title }: ImageSliderProps) {
                     src={img.imageUrl}
                     alt={`${title} - Image ${index + 1}`}
                     fill
-                    className="object-cover"
+                    className={getObjectFit(img.id, false)}
                     priority={index === 0}
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
                   />
