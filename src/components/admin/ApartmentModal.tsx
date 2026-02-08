@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import Image from "next/image";
@@ -12,7 +13,7 @@ export interface ApartmentFormData {
   paymentPlan: string;
   apartmentCategoryId: string;
   features: string[];
-  gallery: string[];
+  gallery: string[]; // preview URLs only
 }
 
 interface ApartmentModalProps {
@@ -29,10 +30,8 @@ interface ApartmentModalProps {
   editingApartment: Apartment | null;
 }
 
-// Helper function to detect if URL is a video
-const isVideo = (url: string): boolean => {
-  const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.avi', '.wmv', '.flv', '.mkv'];
-  return videoExtensions.some(ext => url.toLowerCase().includes(ext));
+const isVideo = (url: string) => {
+  return /\.(mp4|webm|ogg|mov)$/i.test(url);
 };
 
 export default function ApartmentModal({
@@ -50,318 +49,246 @@ export default function ApartmentModal({
 }: ApartmentModalProps) {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  try {
+    if (!selectedFiles.length) {
+      alert("Please upload at least one image");
+      return;
+    }
+
     const formData = new FormData();
 
-    // Append text fields
+    // ===============================
+    // TEXT FIELDS
+    // ===============================
     formData.append("title", form.title);
     formData.append("description", form.description);
     formData.append("location", form.location);
-    formData.append("price", form.price.toString());
+    formData.append("price", String(form.price));
     formData.append("paymentPlan", form.paymentPlan);
     formData.append("apartmentCategoryId", form.apartmentCategoryId);
 
-    // Append features
+    // publicIds = categoryId (as specified)
+    formData.append("publicIds", form.apartmentCategoryId);
+
+    // ===============================
+    // FEATURES ARRAY
+    // ===============================
     form.features.forEach((feature) => {
-      formData.append("features", feature);
+      formData.append("features[]", feature);
     });
 
-    // Append gallery files
+    // ===============================
+    // FILES
+    // ===============================
+
+    // First file = featuredImage
+    formData.append("featuredImage", selectedFiles[0]);
+
+    // Gallery (array)
     selectedFiles.forEach((file) => {
-      formData.append("gallery", file);
+      formData.append("gallery[]", file);
     });
-
-    // Debug log
-    console.log("Submitting FormData...");
-    console.log("Files:", selectedFiles);
 
     await onSubmit(formData);
 
     onClose();
     setSelectedFiles([]);
-  } catch (error) {
-    console.error("Error creating apartment:", error);
-  }
-};
-
+    setForm({
+      title: "",
+      description: "",
+      location: "",
+      price: 0,
+      paymentPlan: "ANNUAL",
+      apartmentCategoryId: "",
+      features: [],
+      gallery: [],
+    });
+  };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        {/* Header */}
         <div className="flex justify-between items-center p-6 border-b">
           <h3 className="text-xl font-semibold">
             {editingApartment ? "Edit Apartment" : "Add New Apartment"}
           </h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            <X className="w-6 h-6" />
+          <button onClick={onClose}>
+            <X className="w-6 h-6 text-gray-500" />
           </button>
         </div>
+
+        {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && (
-            <div className="p-3 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">
+            <div className="bg-red-100 text-red-700 p-3 rounded">
               {error}
             </div>
           )}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Title
-            </label>
+
+          {/* Title */}
+          <input
+            className="input"
+            placeholder="Title"
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+            required
+          />
+
+          {/* Description */}
+          <textarea
+            className="input"
+            rows={4}
+            placeholder="Description"
+            value={form.description}
+            onChange={(e) =>
+              setForm({ ...form, description: e.target.value })
+            }
+            required
+          />
+
+          {/* Location & Price */}
+          <div className="grid grid-cols-2 gap-4">
             <input
-              type="text"
-              required
-              value={form.title}
+              className="input"
+              placeholder="Location"
+              value={form.location}
               onChange={(e) =>
-                setForm({
-                  ...form,
-                  title: e.target.value,
-                })
+                setForm({ ...form, location: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              required
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description
-            </label>
-            <textarea
-              required
-              rows={4}
-              value={form.description}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  description: e.target.value,
-                })
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Location
-              </label>
-              <input
-                type="text"
-                required
-                value={form.location}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    location: e.target.value,
-                  })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Price
-              </label>
-              <input
-                type="number"
-                required
-                value={form.price.toString()}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    price: parseFloat(e.target.value) || 0,
-                  })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Payment Plan
-              </label>
-              <select
-                required
-                value={form.paymentPlan}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    paymentPlan: e.target.value,
-                  })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              >
-                <option value="ANNUAL">ANNUAL</option>
-                <option value="MONTHLY">MONTHLY</option>
-              </select>
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Apartment Category
-            </label>
-            <select
-              required
-              value={form.apartmentCategoryId}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  apartmentCategoryId: e.target.value,
-                })
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            >
-              <option value="">Select a category</option>
-              {categoriesLoading && (
-                <option disabled>Loading categories...</option>
-              )}
-              {categoriesError && (
-                <option disabled>{categoriesError}</option>
-              )}
-              {!categoriesLoading &&
-                !categoriesError &&
-                categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Features{" "}
-              <span className="text-gray-500 text-xs">
-                (comma-separated)
-              </span>
-            </label>
             <input
-              type="text"
-              value={form.features.join(',')}
+              type="number"
+              className="input"
+              placeholder="Price"
+              value={form.price}
               onChange={(e) =>
-                setForm({
-                  ...form,
-                  features: e.target.value.split(',').map(f => f.trim()).filter(f => f),
-                })
+                setForm({ ...form, price: Number(e.target.value) })
               }
-              placeholder="e.g., Bedrooms:3, Pool, WiFi"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              required
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Gallery Images
-            </label>
-            <div className="space-y-2">
-              <input
-                type="file"
-                multiple
-                accept="image/*,video/*"
-                onChange={(e) => {
-                  const files = Array.from(e.target.files || []);
-                  if (files.length === 0) return;
 
-                  // Store actual files for upload
-                  setSelectedFiles(prev => [...prev, ...files]);
-                  
-                  // Create preview URLs for display
-                  const previewUrls = files.map(file => URL.createObjectURL(file));
-                  
-                  setForm(prev => ({
-                    ...prev,
-                    gallery: [...prev.gallery, ...previewUrls]
-                  }));
+          {/* Payment Plan */}
+          <select
+            className="input"
+            value={form.paymentPlan}
+            onChange={(e) =>
+              setForm({ ...form, paymentPlan: e.target.value })
+            }
+          >
+            <option value="ANNUAL">ANNUAL</option>
+            <option value="MONTHLY">MONTHLY</option>
+          </select>
 
-                  // Reset the input
-                  e.target.value = '';
-                }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-              <p className="text-xs text-gray-500">
-                Select multiple images and videos from your device
-              </p>
+          {/* Category */}
+          <select
+            className="input"
+            value={form.apartmentCategoryId}
+            onChange={(e) =>
+              setForm({ ...form, apartmentCategoryId: e.target.value })
+            }
+            required
+          >
+            <option value="">Select category</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+
+          {/* Features */}
+          <input
+            className="input"
+            placeholder="Features (comma separated)"
+            value={form.features.join(",")}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                features: e.target.value
+                  .split(",")
+                  .map((f) => f.trim())
+                  .filter(Boolean),
+              })
+            }
+          />
+
+          {/* File Upload */}
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={(e) => {
+              const files = Array.from(e.target.files || []);
+              if (!files.length) return;
+
+              setSelectedFiles((prev) => [...prev, ...files]);
+
+              const previews = files.map((file) =>
+                URL.createObjectURL(file)
+              );
+
+              setForm((prev) => ({
+                ...prev,
+                gallery: [...prev.gallery, ...previews],
+              }));
+
+              e.target.value = "";
+            }}
+          />
+
+          {/* Gallery Preview */}
+          {form.gallery.length > 0 && (
+            <div className="flex flex-wrap gap-3">
+              {form.gallery.map((url, i) => (
+                <div key={i} className="relative w-20 h-20">
+                  <Image
+                    src={url}
+                    alt="preview"
+                    fill
+                    className="object-cover rounded"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForm((prev) => ({
+                        ...prev,
+                        gallery: prev.gallery.filter((_, x) => x !== i),
+                      }));
+                      setSelectedFiles((prev) =>
+                        prev.filter((_, x) => x !== i)
+                      );
+                    }}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 rounded-full text-xs"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
             </div>
+          )}
 
-            {/* Image previews */}
-            {form.gallery.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-4">
-                {form.gallery.map((url, i) => (
-                  <div key={i} className="relative group">
-                    <div className="h-20 w-20 relative">
-                      {isVideo(url.trim()) ? (
-                        <video
-                          src={url.trim()}
-                          className="w-full h-full object-cover rounded border border-gray-200"
-                          muted
-                          preload="metadata"
-                          aria-label={`Video preview ${i}`}
-                        />
-                      ) : (
-                        <Image
-                          src={url.trim()}
-                          alt={`Preview ${i}`}
-                          fill
-                          className="object-cover rounded border border-gray-200"
-                          onError={() => {
-                            const newGallery = form.gallery.filter((_, index) => index !== i);
-                            setForm({
-                              ...form,
-                              gallery: newGallery,
-                            });
-                          }}
-                        />
-                      )}
-                      {isVideo(url.trim()) && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded">
-                          <div className="w-6 h-6 bg-white/80 rounded-full flex items-center justify-center">
-                            <div className="w-0 h-0 border-l-[6px] border-l-gray-800 border-y-[3px] border-y-transparent ml-0.5"></div>
-                          </div>
-                        </div>
-                      )}
-                      {/* Remove button */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const newGallery = form.gallery.filter((_, index) => index !== i);
-                          setForm({
-                            ...form,
-                            gallery: newGallery,
-                          });
-                          
-                          // Also remove from selectedFiles if it's a newly added file
-                          if (i >= form.gallery.length - selectedFiles.length) {
-                            const fileIndex = i - (form.gallery.length - selectedFiles.length);
-                            setSelectedFiles(prev => prev.filter((_, index) => index !== fileIndex));
-                          }
-                        }}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          {/* Actions */}
           <div className="flex gap-3 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              className="btn-secondary"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+              className="btn-primary"
             >
-              {loading ? "Creating..." : "Create Apartment"}
+              {loading ? "Saving..." : "Create Apartment"}
             </button>
           </div>
         </form>
