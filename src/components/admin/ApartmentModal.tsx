@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { X } from "lucide-react";
 import Image from "next/image";
 import { Apartment } from "@/lib/types";
@@ -8,19 +8,17 @@ export interface ApartmentFormData {
   title: string;
   description: string;
   location: string;
-  price: string;
+  price: number;
   paymentPlan: string;
   apartmentCategoryId: string;
-  listingType: string;
-  features: string;
-  gallery: string;
-  publicIds?: string;
+  features: string[];
+  gallery: string[];
 }
 
 interface ApartmentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (formData: FormData) => Promise<void>;
   form: ApartmentFormData;
   setForm: React.Dispatch<React.SetStateAction<ApartmentFormData>>;
   error: string | null;
@@ -50,6 +48,46 @@ export default function ApartmentModal({
   categoriesError,
   editingApartment,
 }: ApartmentModalProps) {
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  try {
+    const formData = new FormData();
+
+    // Append text fields
+    formData.append("title", form.title);
+    formData.append("description", form.description);
+    formData.append("location", form.location);
+    formData.append("price", form.price.toString());
+    formData.append("paymentPlan", form.paymentPlan);
+    formData.append("apartmentCategoryId", form.apartmentCategoryId);
+
+    // Append features
+    form.features.forEach((feature) => {
+      formData.append("features", feature);
+    });
+
+    // Append gallery files
+    selectedFiles.forEach((file) => {
+      formData.append("gallery", file);
+    });
+
+    // Debug log
+    console.log("Submitting FormData...");
+    console.log("Files:", selectedFiles);
+
+    await onSubmit(formData);
+
+    onClose();
+    setSelectedFiles([]);
+  } catch (error) {
+    console.error("Error creating apartment:", error);
+  }
+};
+
+
   if (!isOpen) return null;
 
   return (
@@ -66,7 +104,7 @@ export default function ApartmentModal({
             <X className="w-6 h-6" />
           </button>
         </div>
-        <form onSubmit={onSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && (
             <div className="p-3 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">
               {error}
@@ -131,11 +169,11 @@ export default function ApartmentModal({
               <input
                 type="number"
                 required
-                value={form.price}
+                value={form.price.toString()}
                 onChange={(e) =>
                   setForm({
                     ...form,
-                    price: e.target.value,
+                    price: parseFloat(e.target.value) || 0,
                   })
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
@@ -203,11 +241,11 @@ export default function ApartmentModal({
             </label>
             <input
               type="text"
-              value={form.features}
+              value={form.features.join(',')}
               onChange={(e) =>
                 setForm({
                   ...form,
-                  features: e.target.value,
+                  features: e.target.value.split(',').map(f => f.trim()).filter(f => f),
                 })
               }
               placeholder="e.g., Bedrooms:3, Pool, WiFi"
@@ -218,25 +256,40 @@ export default function ApartmentModal({
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Gallery Images
             </label>
-            <textarea
-              rows={3}
-              value={form.gallery}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  gallery: e.target.value,
-                })
-              }
-              placeholder="Enter image URLs separated by commas"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent mb-2"
-            />
+            <div className="space-y-2">
+              <input
+                type="file"
+                multiple
+                accept="image/*,video/*"
+                onChange={(e) => {
+                  const files = Array.from(e.target.files || []);
+                  if (files.length === 0) return;
+
+                  // Store actual files for upload
+                  setSelectedFiles(prev => [...prev, ...files]);
+                  
+                  // Create preview URLs for display
+                  const previewUrls = files.map(file => URL.createObjectURL(file));
+                  
+                  setForm(prev => ({
+                    ...prev,
+                    gallery: [...prev.gallery, ...previewUrls]
+                  }));
+
+                  // Reset the input
+                  e.target.value = '';
+                }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+              <p className="text-xs text-gray-500">
+                Select multiple images and videos from your device
+              </p>
+            </div>
 
             {/* Image previews */}
-            <div className="flex flex-wrap gap-2 mt-2">
-              {form.gallery
-                .split(",")
-                .filter((url) => url.trim())
-                .map((url, i) => (
+            {form.gallery.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-4">
+                {form.gallery.map((url, i) => (
                   <div key={i} className="relative group">
                     <div className="h-20 w-20 relative">
                       {isVideo(url.trim()) ? (
@@ -254,12 +307,10 @@ export default function ApartmentModal({
                           fill
                           className="object-cover rounded border border-gray-200"
                           onError={() => {
-                            const urls = form.gallery
-                              .split(",")
-                              .filter((u) => u.trim() !== url.trim());
+                            const newGallery = form.gallery.filter((_, index) => index !== i);
                             setForm({
                               ...form,
-                              gallery: urls.join(","),
+                              gallery: newGallery,
                             });
                           }}
                         />
@@ -271,10 +322,31 @@ export default function ApartmentModal({
                           </div>
                         </div>
                       )}
+                      {/* Remove button */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newGallery = form.gallery.filter((_, index) => index !== i);
+                          setForm({
+                            ...form,
+                            gallery: newGallery,
+                          });
+                          
+                          // Also remove from selectedFiles if it's a newly added file
+                          if (i >= form.gallery.length - selectedFiles.length) {
+                            const fileIndex = i - (form.gallery.length - selectedFiles.length);
+                            setSelectedFiles(prev => prev.filter((_, index) => index !== fileIndex));
+                          }
+                        }}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                      >
+                        ×
+                      </button>
                     </div>
                   </div>
                 ))}
-            </div>
+              </div>
+            )}
           </div>
           <div className="flex gap-3 pt-4">
             <button

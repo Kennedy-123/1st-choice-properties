@@ -6,7 +6,7 @@ const supabaseAdmin = createClient(
 );
 
 const bucketName = "1st-choice-properties-images";
-const folderPath = "2-BEDROOM-FLATS";
+const folderPath = "stunning-5-Bedroom";
 
 export async function logAllSupabaseUrls() {
   try {
@@ -14,7 +14,7 @@ export async function logAllSupabaseUrls() {
       .from(bucketName)
       .list(folderPath);
 
-    console.log(files); 
+    // console.log(files); 
     if (error) {
       console.error("Error listing files:", error.message);
       return;

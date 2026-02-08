@@ -13,24 +13,11 @@ import FAQsTab from "@/components/admin/FAQsTab";
 import BookingsTab from "@/components/admin/BookingsTab";
 import CategoryModal from "@/components/admin/CategoryModal";
 import FAQModal from "@/components/admin/FAQModal";
-import ApartmentModal from "@/components/admin/ApartmentModal";
+import ApartmentModal, { ApartmentFormData } from "@/components/admin/ApartmentModal";
 import api from "@/lib/axiosInstance";
 // import { logAllSupabaseUrls } from "@/utils/list-urls";
 
 type TabType = "apartments" | "categories" | "faqs" | "bookings";
-
-interface ApartmentFormData {
-  title: string;
-  description: string;
-  location: string;
-  price: string;
-  paymentPlan: string;
-  apartmentCategoryId: string;
-  listingType: string;
-  features: string;
-  gallery: string;
-  publicIds?: string;
-}
 
 interface CategoryFormData {
   name: string;
@@ -100,13 +87,11 @@ export default function AdminDashboard() {
     title: "",
     description: "",
     location: "",
-    price: "",
+    price: 0,
     paymentPlan: "MONTHLY",
     apartmentCategoryId: "",
-    listingType: "rent",
-    features: "",
-    gallery: "",
-    publicIds: "",
+    features: [],
+    gallery: [],
   });
   const [apartmentError, setApartmentError] = useState<string | null>(null);
 
@@ -183,85 +168,46 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleCreateApartment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setApartmentError(null);
-    try {
-      if (editingApartment) {
-        await apartmentHook.updateApartment(editingApartment.id, {
-          title: apartmentForm.title,
-          description: apartmentForm.description,
-          location: apartmentForm.location,
-          price: Number(apartmentForm.price),
-          paymentPlan: apartmentForm.paymentPlan,
-          apartmentCategoryId: apartmentForm.apartmentCategoryId,
-          features: apartmentForm.features
-            ? apartmentForm.features
-                .split(",")
-                .map((f) => f.trim())
-                .filter((f) => f)
-            : [],
-          gallery: apartmentForm.gallery
-            ? apartmentForm.gallery
-                .split(",")
-                .map((g) => g.trim())
-                .filter((g) => g)
-            : [],
-          publicIds: apartmentForm.publicIds?.trim() || "",
-        });
-      } else {
-        await apartmentHook.createApartment({
-          title: apartmentForm.title,
-          description: apartmentForm.description,
-          location: apartmentForm.location,
-          price: Number(apartmentForm.price),
-          paymentPlan: apartmentForm.paymentPlan,
-          apartmentCategoryId: apartmentForm.apartmentCategoryId,
-          publicIds: apartmentForm.publicIds?.trim() || "",
-          features: apartmentForm.features
-            ? apartmentForm.features
-                .split(",")
-                .map((f) => f.trim())
-                .filter((f) => f)
-            : [],
-          gallery: apartmentForm.gallery
-            ? apartmentForm.gallery
-                .split(",")
-                .map((g) => g.trim())
-                .filter((g) => g)
-            : [],
-        });
-      }
-      setShowApartmentModal(false);
-      setApartmentForm({
-        title: "",
-        description: "",
-        location: "",
-        price: "",
-        paymentPlan: "MONTHLY",
-        apartmentCategoryId: "",
-        listingType: "rent",
-        features: "",
-        gallery: "",
-        publicIds: "",
-      });
-      setEditingApartment(null);
-      // Reload the page to show the latest changes
-      // window.location.reload();
-    } catch (error: unknown) {
-      let errorMessage = "Failed to save apartment. Please try again.";
-      if (error && typeof error === "object" && "response" in error) {
-        const apiError = error as {
-          response?: { data?: { message?: string } };
-        };
-        if (apiError.response?.data?.message) {
-          errorMessage = apiError.response.data.message;
-        }
-      }
-      setApartmentError(errorMessage);
-      console.error("Failed to create apartment:", error);
+const handleCreateApartment = async (formData: FormData) => {
+  setApartmentError(null);
+
+  try {
+    if (editingApartment) {
+      await apartmentHook.updateApartment(editingApartment.id, formData);
+    } else {
+      await apartmentHook.createApartment(formData);
     }
-  };
+
+    setShowApartmentModal(false);
+    setApartmentForm({
+      title: "",
+      description: "",
+      location: "",
+      price: 0,
+      paymentPlan: "MONTHLY",
+      apartmentCategoryId: "",
+      features: [],
+      gallery: [],
+    });
+    setEditingApartment(null);
+
+  } catch (error: unknown) {
+    let errorMessage = "Failed to save apartment. Please try again.";
+
+    if (error && typeof error === "object" && "response" in error) {
+      const apiError = error as {
+        response?: { data?: { message?: string } };
+      };
+      if (apiError.response?.data?.message) {
+        errorMessage = apiError.response.data.message;
+      }
+    }
+
+    setApartmentError(errorMessage);
+    console.error("Failed to create apartment:", error);
+  }
+};
+
 
   const handleCreateCategory = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -422,13 +368,11 @@ export default function AdminDashboard() {
             title: "",
             description: "",
             location: "",
-            price: "",
+            price: 0,
             paymentPlan: "MONTHLY",
             apartmentCategoryId: "",
-            listingType: "rent",
-            features: "",
-            gallery: "",
-            publicIds: "",
+            features: [],
+            gallery: [],
           });
           setEditingApartment(null);
         }}

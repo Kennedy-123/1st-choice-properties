@@ -8,8 +8,6 @@ interface ApartmentData {
   price: number;
   paymentPlan: string;
   apartmentCategoryId: string;
-  listingType?: string;
-  publicIds?: string;
   features?: string[];
   gallery?: string[];
 }
@@ -19,31 +17,58 @@ export const useAdminApartments = () => {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
-  const createApartment = async (data: ApartmentData) => {
+  const createApartment = async (formData: FormData) => {
     setLoading(true);
     setError(null);
     setMessage(null);
+    
     try {
-      const response = await api.post("/apartments", data);
+      // Convert FormData to ApartmentData
+      const apartmentData: ApartmentData = {
+        title: formData.get('title') as string,
+        description: formData.get('description') as string,
+        location: formData.get('location') as string,
+        price: Number(formData.get('price')),
+        paymentPlan: formData.get('paymentPlan') as string,
+        apartmentCategoryId: formData.get('apartmentCategoryId') as string,
+        features: formData.getAll('features') as string[],
+        gallery: [], // Gallery will be handled separately for file uploads
+      };
+
+      const response = await api.post("/apartments", apartmentData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       setMessage("Apartment created successfully!");
-      console.log('created')
       return response.data;
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
       setError(error.response?.data?.message || "Failed to create apartment");
-      console.log(error)
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  const updateApartment = async (id: string, data: Partial<ApartmentData>) => {
+  const updateApartment = async (id: string, formData: FormData) => {
     setLoading(true);
     setError(null);
     setMessage(null);
     try {
-      const response = await api.patch(`/apartments/${id}`, data);
+      // Convert FormData to ApartmentData
+      const apartmentData: Partial<ApartmentData> = {
+        title: formData.get('title') as string,
+        description: formData.get('description') as string,
+        location: formData.get('location') as string,
+        price: Number(formData.get('price')),
+        paymentPlan: formData.get('paymentPlan') as string,
+        apartmentCategoryId: formData.get('apartmentCategoryId') as string,
+        features: formData.getAll('features') as string[],
+        gallery: [], // Gallery will be handled separately for file uploads
+      };
+
+      const response = await api.patch(`/apartments/${id}`, apartmentData);
       setMessage("Apartment updated successfully!");
       return response.data;
     } catch (err: unknown) {
