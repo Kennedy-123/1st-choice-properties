@@ -17,12 +17,16 @@ export const useAdminApartments = () => {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
-  const createApartment = async (formData: FormData) => {
+    const createApartment = async (formData: FormData) => {
     setLoading(true);
     setError(null);
     setMessage(null);
-    
+
     try {
+      // Extract files from FormData
+      const galleryFiles = formData.getAll('gallery') as File[];
+      console.log(galleryFiles)
+      
       // Convert FormData to ApartmentData
       const apartmentData: ApartmentData = {
         title: formData.get('title') as string,
@@ -32,14 +36,34 @@ export const useAdminApartments = () => {
         paymentPlan: formData.get('paymentPlan') as string,
         apartmentCategoryId: formData.get('apartmentCategoryId') as string,
         features: formData.getAll('features') as string[],
-        gallery: [], // Gallery will be handled separately for file uploads
+        gallery: galleryFiles.map(file => file.name), // Send file names instead of empty array
+
       };
 
-      const response = await api.post("/apartments", apartmentData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
+      // Create new FormData with both text data and files
+      const combinedFormData = new FormData();
+      Object.entries(apartmentData).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          value.forEach(item => combinedFormData.append(key, item));
+        } else if (value !== undefined && value !== null) {
+          combinedFormData.append(key, value.toString());
+        }
       });
+
+      // Add files back to FormData
+      galleryFiles.forEach(file => combinedFormData.append('gallery', file));
+
+      
+
+      const response = await api.post(
+        "/apartments", 
+        combinedFormData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
       setMessage("Apartment created successfully!");
       return response.data;
     } catch (err: unknown) {
@@ -56,6 +80,9 @@ export const useAdminApartments = () => {
     setError(null);
     setMessage(null);
     try {
+      // Extract files from FormData
+      const galleryFiles = formData.getAll('gallery') as File[];
+      
       // Convert FormData to ApartmentData
       const apartmentData: Partial<ApartmentData> = {
         title: formData.get('title') as string,
@@ -65,10 +92,31 @@ export const useAdminApartments = () => {
         paymentPlan: formData.get('paymentPlan') as string,
         apartmentCategoryId: formData.get('apartmentCategoryId') as string,
         features: formData.getAll('features') as string[],
-        gallery: [], // Gallery will be handled separately for file uploads
+        gallery: galleryFiles.map(file => file.name), // Send file names instead of empty array
       };
 
-      const response = await api.patch(`/apartments/${id}`, apartmentData);
+      // Create new FormData with both text data and files
+      const combinedFormData = new FormData();
+      Object.entries(apartmentData).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          value.forEach(item => combinedFormData.append(key, item));
+        } else if (value !== undefined && value !== null) {
+          combinedFormData.append(key, value.toString());
+        }
+      });
+
+      // Add files back to FormData
+      galleryFiles.forEach(file => combinedFormData.append('gallery', file));
+
+      const response = await api.patch(
+        `/apartments/${id}`, 
+        combinedFormData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
       setMessage("Apartment updated successfully!");
       return response.data;
     } catch (err: unknown) {
