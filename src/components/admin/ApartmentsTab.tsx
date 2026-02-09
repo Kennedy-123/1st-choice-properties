@@ -3,12 +3,12 @@
 import React, { useState } from "react";
 import { Plus, Edit, Trash2, Loader2, X } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Apartment } from "@/lib/types";
 import { useApartmentById } from "@/hooks/useApartmentById";
 import { useUpdateApartment } from "@/hooks/useUpdateApartment";
 
 interface ApartmentsTabProps {
-  onAddClick: () => void;
   onDelete: (id: string) => Promise<void>;
   apartments: Apartment[];
   loading: boolean;
@@ -16,12 +16,12 @@ interface ApartmentsTabProps {
 }
 
 export default function ApartmentsTab({
-  onAddClick,
   onDelete,
   apartments = [],
   loading,
   error,
 }: ApartmentsTabProps) {
+  const router = useRouter();
   const [apartmentToDelete, setApartmentToDelete] = useState<Apartment | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [apartmentToEdit, setApartmentToEdit] = useState<string | null>(null);
@@ -400,7 +400,7 @@ export default function ApartmentsTab({
           Manage Apartments
         </h2>
         <button
-          onClick={onAddClick}
+          onClick={() => router.push('/create-apartment')}
           className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
         >
           <Plus className="w-5 h-5" />
@@ -412,7 +412,7 @@ export default function ApartmentsTab({
         <div className="text-center py-12 bg-gray-50 rounded-lg">
           <p className="text-gray-600">No apartments found.</p>
           <button
-            onClick={onAddClick}
+            onClick={() => router.push('/create-apartment')}
             className="mt-4 text-green-600 hover:text-green-800 font-medium"
           >
             Add your first apartment

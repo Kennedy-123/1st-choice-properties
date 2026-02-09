@@ -1,74 +1,31 @@
 import { useState } from "react";
 import api from "@/lib/axiosInstance";
-
-interface ApartmentData {
-  title: string;
-  description: string;
-  location: string;
-  price: number;
-  paymentPlan: string;
-  apartmentCategoryId: string;
-  features?: string[];
-  gallery?: string[];
-}
+import { AxiosError } from "axios";
 
 export const useAdminApartments = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
-    const createApartment = async (formData: FormData) => {
+  const createApartment = async (formData: FormData) => {
     setLoading(true);
     setError(null);
     setMessage(null);
 
     try {
-      // Extract all data from FormData first
-      const title = formData.get('title') as string;
-      const description = formData.get('description') as string;
-      const location = formData.get('location') as string;
-      const price = Number(formData.get('price'));
-      const paymentPlan = formData.get('paymentPlan') as string;
-      const apartmentCategoryId = formData.get('apartmentCategoryId') as string;
-      const features = formData.getAll('features') as string[];
-      const galleryFiles = formData.getAll('gallery') as File[];
-      
-      console.log('Extracted gallery files:', galleryFiles);
-       
-      // Create new FormData with both text data and files
-      const combinedFormData = new FormData();
-      
-      // Add text fields
-      combinedFormData.append('title', title);
-      combinedFormData.append('description', description);
-      combinedFormData.append('location', location);
-      combinedFormData.append('price', price.toString());
-      combinedFormData.append('paymentPlan', paymentPlan);
-      combinedFormData.append('apartmentCategoryId', apartmentCategoryId);
-      
-      // Add arrays
-      features.forEach(feature => combinedFormData.append('features', feature));
-      galleryFiles.forEach(file => combinedFormData.append('gallery', file));
-
-      console.log('Combined FormData entries:');
-      for (const [key, value] of combinedFormData.entries()) {
-        console.log(`${key}:`, value);
-      }
-
-      const response = await api.post(
-        "/apartments", 
-        combinedFormData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
+      const res = await api.post("/apartments", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
         }
-      );
+      });
       setMessage("Apartment created successfully!");
-      return response.data;
+      return res.data;
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string } } };
-      setError(error.response?.data?.message || "Failed to create apartment");
+      if (err instanceof AxiosError) {
+        setError(err?.response?.data?.message || "Failed to create apartment");
+      } else {
+        setError("Failed to create apartment");
+      }
       throw err;
     } finally {
       setLoading(false);
@@ -79,49 +36,17 @@ export const useAdminApartments = () => {
     setLoading(true);
     setError(null);
     setMessage(null);
+
     try {
-      // Extract files from FormData
-      const galleryFiles = formData.getAll('gallery') as File[];
-      
-      // Convert FormData to ApartmentData
-      const apartmentData: Partial<ApartmentData> = {
-        title: formData.get('title') as string,
-        description: formData.get('description') as string,
-        location: formData.get('location') as string,
-        price: Number(formData.get('price')),
-        paymentPlan: formData.get('paymentPlan') as string,
-        apartmentCategoryId: formData.get('apartmentCategoryId') as string,
-        features: formData.getAll('features') as string[],
-        gallery: galleryFiles.map(file => file.name), // Send file names instead of empty array
-      };
-
-      // Create new FormData with both text data and files
-      const combinedFormData = new FormData();
-      Object.entries(apartmentData).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          value.forEach(item => combinedFormData.append(key, item));
-        } else if (value !== undefined && value !== null) {
-          combinedFormData.append(key, value.toString());
-        }
-      });
-
-      // Add files back to FormData
-      galleryFiles.forEach(file => combinedFormData.append('gallery', file));
-
-      const response = await api.patch(
-        `/apartments/${id}`, 
-        combinedFormData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
+      const res = await api.patch(`/apartments/${id}`, formData);
       setMessage("Apartment updated successfully!");
-      return response.data;
+      return res.data;
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string } } };
-      setError(error.response?.data?.message || "Failed to update apartment");
+      if (err instanceof AxiosError) {
+        setError(err?.response?.data?.message || "Failed to update apartment");
+      } else {
+        setError("Failed to update apartment");
+      }
       throw err;
     } finally {
       setLoading(false);
@@ -132,12 +57,16 @@ export const useAdminApartments = () => {
     setLoading(true);
     setError(null);
     setMessage(null);
+
     try {
       await api.delete(`/apartments/${id}`);
       setMessage("Apartment deleted successfully!");
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string } } };
-      setError(error.response?.data?.message || "Failed to delete apartment");
+      if (err instanceof AxiosError) {
+        setError(err?.response?.data?.message || "Failed to delete apartment");
+      } else {
+        setError("Failed to delete apartment");
+      }
       throw err;
     } finally {
       setLoading(false);

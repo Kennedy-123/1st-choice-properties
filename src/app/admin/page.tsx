@@ -315,7 +315,6 @@ const handleCreateApartment = async (formData: FormData) => {
           {/* Apartments Tab */}
           {activeTab === "apartments" && (
             <ApartmentsTab
-              onAddClick={() => setShowApartmentModal(true)}
               onDelete={handleDeleteApartment}
               apartments={allApartments}
               loading={loading}
