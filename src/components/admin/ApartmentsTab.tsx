@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import { Plus, Edit, Trash2, Loader2, X } from "lucide-react";
 import Image from "next/image";
@@ -115,6 +114,7 @@ export default function ApartmentsTab({
         setIsEditing(false);
         // Optionally close modal after successful update
         setTimeout(() => onClose(), 1500);
+        window.location.reload()
       }
     };
 
@@ -228,20 +228,25 @@ export default function ApartmentsTab({
                     <p className="text-sm text-gray-600">{apartment.price}</p>
                   )}
                 </div>
-                <div>
-                  <h4 className="text-sm font-medium text-gray-900 mb-2">Payment Plan</h4>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="paymentPlan"
-                      value={formData.paymentPlan}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  ) : (
-                    <p className="text-sm text-gray-600">{apartment.paymentPlan}</p>
-                  )}
-                </div>
+                {apartment.apartmentCategory?.name !== "For Sale" && (
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 mb-2">Payment Plan</h4>
+                    {isEditing ? (
+                      <select
+                        name="paymentPlan"
+                        value={formData.paymentPlan}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">Select payment plan</option>
+                        <option value="ANNUAL">ANNUAL</option>
+                        <option value="MONTHLY">MONTHLY</option>
+                      </select>
+                    ) : (
+                      <p className="text-sm text-gray-600">{apartment.paymentPlan}</p>
+                    )}
+                  </div>
+                )}
                 <div>
                   <h4 className="text-sm font-medium text-gray-900 mb-2">Category</h4>
                   <p className="text-sm text-gray-600">{apartment.apartmentCategory?.name || "N/A"}</p>

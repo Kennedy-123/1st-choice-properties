@@ -15,7 +15,6 @@ import CategoryModal from "@/components/admin/CategoryModal";
 import FAQModal from "@/components/admin/FAQModal";
 import ApartmentModal, { ApartmentFormData } from "@/components/admin/ApartmentModal";
 import api from "@/lib/axiosInstance";
-// import { logAllSupabaseUrls } from "@/utils/list-urls";
 
 type TabType = "apartments" | "categories" | "faqs" | "bookings";
 
@@ -29,7 +28,6 @@ interface FAQFormData {
 }
 
 export default function AdminDashboard() {
-  // logAllSupabaseUrls();
   const [categories, setCategories] = useState<{ id: string; name: string }[]>(
     []
   );
@@ -204,7 +202,6 @@ const handleCreateApartment = async (formData: FormData) => {
     }
 
     setApartmentError(errorMessage);
-    console.error("Failed to create apartment:", error);
   }
 };
 
