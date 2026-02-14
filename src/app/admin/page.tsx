@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { useAdminApartments } from "@/hooks/useAdminApartments";
 import { useAdminCategories } from "@/hooks/useAdminCategories";
-import { Apartment } from "@/lib/types";
 import { useAdminFAQs } from "@/hooks/useAdminFAQs";
 import { useAdminBookings } from "@/hooks/useAdminBookings";
 import { useApartments } from "@/hooks/useApartments";
@@ -13,7 +12,6 @@ import FAQsTab from "@/components/admin/FAQsTab";
 import BookingsTab from "@/components/admin/BookingsTab";
 import CategoryModal from "@/components/admin/CategoryModal";
 import FAQModal from "@/components/admin/FAQModal";
-import ApartmentModal, { ApartmentFormData } from "@/components/admin/ApartmentModal";
 import api from "@/lib/axiosInstance";
 
 type TabType = "apartments" | "categories" | "faqs" | "bookings";
@@ -52,7 +50,6 @@ export default function AdminDashboard() {
     fetchCategories();
   }, []);
   const [activeTab, setActiveTab] = useState<TabType>("apartments");
-  const [showApartmentModal, setShowApartmentModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
 
   // Use the useApartments hook to fetch all apartments
@@ -68,9 +65,6 @@ export default function AdminDashboard() {
     name: string;
     description?: string;
   } | null>(null);
-  const [editingApartment, setEditingApartment] = useState<Apartment | null>(
-    null
-  );
 
   const apartmentHook = useAdminApartments();
   const categoryHook = useAdminCategories();
@@ -80,18 +74,6 @@ export default function AdminDashboard() {
     loading: bookingsLoading,
     error: bookingsError,
   } = useAdminBookings();
-
-  const [apartmentForm, setApartmentForm] = useState<ApartmentFormData>({
-    title: "",
-    description: "",
-    location: "",
-    price: 0,
-    paymentPlan: "MONTHLY",
-    apartmentCategoryId: "",
-    features: [],
-    gallery: [],
-  });
-  const [apartmentError, setApartmentError] = useState<string | null>(null);
 
   const [categoryForm, setCategoryForm] = useState<CategoryFormData>({
     name: "",
@@ -165,45 +147,6 @@ export default function AdminDashboard() {
       console.error("Failed to delete apartment:", error);
     }
   };
-
-const handleCreateApartment = async (formData: FormData) => {
-  setApartmentError(null);
-
-  try {
-    if (editingApartment) {
-      await apartmentHook.updateApartment(editingApartment.id, formData);
-    } else {
-      await apartmentHook.createApartment(formData);
-    }
-
-    setShowApartmentModal(false);
-    setApartmentForm({
-      title: "",
-      description: "",
-      location: "",
-      price: 0,
-      paymentPlan: "MONTHLY",
-      apartmentCategoryId: "",
-      features: [],
-      gallery: [],
-    });
-    setEditingApartment(null);
-
-  } catch (error: unknown) {
-    let errorMessage = "Failed to save apartment. Please try again.";
-
-    if (error && typeof error === "object" && "response" in error) {
-      const apiError = error as {
-        response?: { data?: { message?: string } };
-      };
-      if (apiError.response?.data?.message) {
-        errorMessage = apiError.response.data.message;
-      }
-    }
-
-    setApartmentError(errorMessage);
-  }
-};
 
 
   const handleCreateCategory = async (e: React.FormEvent) => {
@@ -355,33 +298,6 @@ const handleCreateApartment = async (formData: FormData) => {
           )}
         </div>
       </div>
-
-      <ApartmentModal
-        isOpen={showApartmentModal}
-        onClose={() => {
-          setShowApartmentModal(false);
-          setApartmentForm({
-            title: "",
-            description: "",
-            location: "",
-            price: 0,
-            paymentPlan: "MONTHLY",
-            apartmentCategoryId: "",
-            features: [],
-            gallery: [],
-          });
-          setEditingApartment(null);
-        }}
-        onSubmit={handleCreateApartment}
-        form={apartmentForm}
-        setForm={setApartmentForm}
-        error={apartmentError}
-        loading={apartmentHook.loading}
-        categories={categories}
-        categoriesLoading={categoriesLoading}
-        categoriesError={categoriesError}
-        editingApartment={editingApartment}
-      />
 
       {/* Category Modal */}
       <CategoryModal
