@@ -44,7 +44,6 @@ export function useApartments(page: number = 1, limit: number = 10) {
 
       setApartments(forRent);
       setAllApartments(fetched);
-      console.log(fetched);
       setError(null);
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {

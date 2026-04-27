@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Plus, Edit, Trash2, Loader2, X } from "lucide-react";
+import { Plus, Edit, Trash2, Loader2, X, Search } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Apartment } from "@/lib/types";
@@ -21,9 +21,18 @@ export default function ApartmentsTab({
   error,
 }: ApartmentsTabProps) {
   const router = useRouter();
+  const [searchTerm, setSearchTerm] = useState("");
   const [apartmentToDelete, setApartmentToDelete] = useState<Apartment | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [apartmentToEdit, setApartmentToEdit] = useState<string | null>(null);
+
+  // Filter apartments based on search term
+  const filteredApartments = apartments.filter(apartment =>
+    apartment.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    apartment.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    apartment.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    apartment.apartmentCategory?.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleDeleteClick = (apartment: Apartment, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -120,7 +129,7 @@ export default function ApartmentsTab({
 
     return (
       <div 
-        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 p-4"
         onClick={onClose}
       >
         <div 
@@ -404,18 +413,32 @@ export default function ApartmentsTab({
         <h2 className="text-2xl font-semibold text-gray-900">
           Manage Apartments
         </h2>
-        <button
-          onClick={() => router.push('/create-apartment')}
-          className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
-        >
-          <Plus className="w-5 h-5" />
-          Add Apartment
-        </button>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Search apartments..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            />
+          </div>
+          <button
+            onClick={() => router.push('/create-apartment')}
+            className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors w-full sm:w-auto"
+          >
+            <Plus className="w-5 h-5" />
+            Add Apartment
+          </button>
+        </div>
       </div>
 
-      {apartments.length === 0 ? (
+      {filteredApartments.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <p className="text-gray-600">No apartments found.</p>
+          <p className="text-gray-600">
+            {searchTerm ? "No apartments found matching your search." : "No apartments found."}
+          </p>
           <button
             onClick={() => router.push('/create-apartment')}
             className="mt-4 text-green-600 hover:text-green-800 font-medium"
@@ -458,7 +481,7 @@ export default function ApartmentsTab({
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {apartments.map((apartment) => (
+              {filteredApartments.map((apartment) => (
                 <tr key={apartment.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">

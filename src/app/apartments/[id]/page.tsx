@@ -14,7 +14,6 @@ export default function ApartmentDetailPage() {
   const id = params?.id as string;
 
   const { apartment, loading, error } = useApartmentById(id);
-  console.log(apartment)
   const {
     addToFavorites,
     loading: favLoading,
