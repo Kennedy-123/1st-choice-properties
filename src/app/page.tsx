@@ -7,6 +7,19 @@ import { useApartments } from "@/hooks/useApartments";
 import playStore from "./image/playstore.png";
 import apple from "./image/apple.png";
 import VideoSection from "@/components/VideoSection";
+import { motion } from "framer-motion";
+import { Sparkles } from "lucide-react";
+const sectionVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6
+    }
+  }
+};
+
 export default function Home() {
   const { apartments, loading, error } = useApartments();
 
@@ -19,24 +32,40 @@ export default function Home() {
       <VideoSection />
 
       {/* Featured Apartments */}
-      <section className="py-12 bg-gray-50">
+      <motion.section 
+        variants={sectionVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        className="py-20 bg-gradient-to-b from-white via-green-50/30 to-white"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="w-12 h-1 bg-gradient-to-r from-transparent to-green-500" />
+              <Sparkles className="w-6 h-6 text-green-500" />
+              <div className="w-12 h-1 bg-gradient-to-l from-transparent to-green-500" />
+            </div>
+            <h2 className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-4">
               Featured Properties
             </h2>
-            <p className="mt-3 max-w-2xl mx-auto text-xl text-gray-500 sm:mt-4">
-              Discover your perfect home from our curated selection of
-              properties
+            <p className="max-w-2xl mx-auto text-lg text-gray-600 leading-relaxed">
+              Discover your perfect home from our curated selection of premium properties
             </p>
-          </div>
+          </motion.div>
           <ApartmentList
             apartments={apartments}
             loading={loading}
             error={error}
           />
         </div>
-      </section>
+      </motion.section>
       {/* App promo (design only — images intentionally omitted) */}
       <section className="bg-green-900 text-white py-12 mt-10 mb-10">
         <div className="max-w-6xl mx-auto px-6 flex items-center gap-8">

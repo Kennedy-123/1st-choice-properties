@@ -3,8 +3,20 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { FaMapMarkerAlt, FaHeart, FaRegHeart } from "react-icons/fa";
-import { useFavoriteApartment } from "@/hooks/useFavoriteApartment"; // 👈 import the hook
+import { motion } from "framer-motion";
+import { MapPin, Heart, ArrowRight, Bed, Bath, Car } from "lucide-react";
+import { useFavoriteApartment } from "@/hooks/useFavoriteApartment";
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4
+    }
+  }
+};
 
 type RentPropertyCardProps = {
   id: string;
@@ -42,72 +54,120 @@ function RentPropertyCard({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col w-full max-w-2xl mx-auto my-6">
+    <motion.div
+      variants={cardVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-50px" }}
+      className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col w-full max-w-2xl mx-auto my-6 border border-gray-100 hover:-translate-y-1 h-full"
+    >
       {/* Image */}
-      <div className="relative w-full h-48 md:h-64 lg:h-72">
+      <div className="relative w-full h-56 md:h-64 lg:h-72 overflow-hidden flex-shrink-0">
         <Link href={`/apartments/${id}`}>
           <Image
             src={image}
             alt="listing image"
             fill
-            className="object-cover"
+            className="object-cover transition-transform duration-500 hover:scale-110"
           />
         </Link>
 
-        {/* ❤️ Favorite */}
-        <button
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+
+        {/* ❤️ Favorite Button */}
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
           onClick={toggleFavorite}
           disabled={loading}
-          className="absolute top-2 right-2 hover:cursor-pointer bg-white/80 p-2 rounded-full hover:bg-white transition"
+          className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm p-2.5 rounded-full shadow-lg hover:bg-white transition-all duration-300"
           aria-label="Add to favorites"
         >
-          {isFavorited ? (
-            <FaHeart className="text-red-500 text-lg md:text-xl" />
-          ) : (
-            <FaRegHeart className="text-gray-700 text-lg md:text-xl" />
-          )}
-        </button>
+          <Heart 
+            className={`w-5 h-5 transition-colors duration-300 ${
+              isFavorited ? "text-red-500 fill-current" : "text-gray-600"
+            }`} 
+          />
+        </motion.button>
       </div>
+      
       {/* Content */}
-      <div className="p-4 flex flex-col gap-2 flex-1">
-        <div className="font-semibold text-lg md:text-xl text-gray-900 truncate" title={title}>
-          {title}
+      <div className="p-5 flex flex-col gap-3 flex-grow">
+        <div className="flex justify-between items-start flex-shrink-0">
+          <div className="flex-1 pr-2">
+            <h3 className="font-bold text-xl md:text-2xl text-gray-900 truncate" title={title}>
+              {title}
+            </h3>
+          </div>
         </div>
 
-        <div className="font-bold text-green-600 text-lg md:text-xl">
-          {price} {apartmentCategory === 'For Rent' && paymentPlan ? `/ ${paymentPlan}` : ''}
-        </div>
-
-        <div className="flex items-center text-gray-500 text-sm md:text-base gap-1 overflow-hidden">
-          <FaMapMarkerAlt className="text-green-600 flex-shrink-0" />
+        <div className="flex items-center gap-1 text-gray-500 text-sm md:text-base flex-shrink-0">
+          <MapPin className="w-4 h-4 text-green-600 flex-shrink-0" />
           <span className="truncate" title={location}>
             {location}
           </span>
         </div>
 
-        <div className="flex items-center justify-start mt-2 gap-2 text-gray-700 text-sm md:text-base overflow-hidden">
-          <span className="flex-shrink-0 flex items-center gap-1 bg-gray-300 px-2 py-1 rounded-sm whitespace-nowrap overflow-hidden text-ellipsis max-w-[33%]">
-            {beds}
-          </span>
-          <span className="flex-shrink-0 flex items-center gap-1 bg-gray-300 px-2 py-1 rounded-sm whitespace-nowrap overflow-hidden text-ellipsis max-w-[33%]">
-            {baths}
-          </span>
-          <span className="flex-shrink-0 flex items-center gap-1 bg-gray-300 px-2 py-1 rounded-sm whitespace-nowrap overflow-hidden text-ellipsis max-w-[33%]">
-            {parking}
-          </span>
+        <div className="flex items-baseline gap-2 flex-shrink-0">
+          <p className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+            {price}
+          </p>
+          {apartmentCategory === 'For Rent' && paymentPlan && (
+            <span className="text-gray-500 text-sm">/ {paymentPlan}</span>
+          )}
         </div>
 
-        <div className="flex gap-2 mt-3">
-          <button className="flex-1 bg-green-600 rounded-md hover:cursor-pointer py-2 font-bold text-white hover:bg-green-700 transition text-sm md:text-base">
+        {/* Amenities */}
+        <div className="flex items-center justify-start gap-3 mt-2 flex-shrink-0">
+          <div className="flex items-center gap-1.5 bg-green-50 text-green-700 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">
+            <Bed className="w-4 h-4" />
+            <span>{beds}</span>
+          </div>
+          <div className="flex items-center gap-1.5 bg-green-50 text-green-700 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">
+            <Bath className="w-4 h-4" />
+            <span>{baths}</span>
+          </div>
+          <div className="flex items-center gap-1.5 bg-green-50 text-green-700 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">
+            <Car className="w-4 h-4" />
+            <span>{parking}</span>
+          </div>
+        </div>
+
+        <div className="flex gap-3 mt-4 pt-4 border-t border-gray-100 flex-shrink-0">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 rounded-xl py-3 font-semibold text-white transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+          >
             Book Now
-          </button>
+            <ArrowRight className="w-4 h-4" />
+          </motion.button>
         </div>
 
         {/* Feedback messages */}
-        {message && <p className="text-green-600 text-sm mt-2">{message}</p>}
-        {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
+        {message && (
+          <motion.p 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-green-600 text-sm mt-2 flex items-center gap-1 flex-shrink-0"
+          >
+            <span>✓</span>
+            {message}
+          </motion.p>
+        )}
+        {error && (
+          <motion.p 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-red-600 text-sm mt-2 flex items-center gap-1 flex-shrink-0"
+          >
+            <span>⚠</span>
+            {error}
+          </motion.p>
+        )}
       </div>
-    </div>
+    </motion.div>
   );
 }
 

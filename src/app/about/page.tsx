@@ -3,7 +3,7 @@ import React from "react";
 
 export default function AboutPage() {
   return (
-    <div className="max-w-5xl mx-auto mt-10 px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <div className="max-w-5xl mx-auto mt-10 px-4 sm:px-8 lg:px-8 py-14 sm:py-12">
       <div className="prose max-w-none text-gray-700">
         <p className="mb-6 text-sm sm:text-base leading-relaxed">
           1st Choice Properties is a trusted real-estate firm based in Nigeria,

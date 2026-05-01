@@ -8,12 +8,34 @@ import {
   Mail,
   Shield,
   Calendar,
-  RefreshCw,
   CheckCircle,
   XCircle,
   LogOut
 } from "lucide-react";
 import { useLogout } from "@/hooks/useLogout";
+import { motion } from "framer-motion";
+
+const sectionVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6
+    }
+  }
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.5
+    }
+  }
+};
 
 export default function ProfilePage() {
   const { logoutUser } = useLogout();
@@ -27,325 +49,348 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center"
+      >
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading your profile...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-600 border-t-transparent shadow-lg mx-auto"></div>
+          <p className="mt-6 text-gray-600 text-lg">Loading your profile...</p>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8 text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <span className="text-red-600 text-2xl">⚠</span>
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center px-4"
+      >
+        <div className="max-w-md w-full bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl p-8 text-center border border-white/50">
+          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span className="text-red-600 text-3xl">⚠</span>
           </div>
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+          <h2 className="text-2xl font-bold text-gray-800 mb-3">
             Error Loading Profile
           </h2>
-          <p className="text-gray-600 mb-6">{error}</p>
-          <div className="flex gap-3 justify-center">
-            <button
+          <p className="text-gray-600 mb-8 text-lg">{error}</p>
+          <div className="flex gap-4 justify-center">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => router.push("/")}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all"
+              className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all font-medium"
             >
               Go Home
-            </button>
-            <button
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => refetch()}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all"
+              className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all font-medium shadow-lg hover:shadow-xl"
             >
               Try Again
-            </button>
+            </motion.button>
           </div>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-md p-8 text-center">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <User className="w-8 h-8 text-gray-400" />
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center px-4"
+      >
+        <div className="max-w-md w-full bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl p-8 text-center border border-white/50">
+          <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <User className="w-10 h-10 text-gray-400" />
           </div>
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+          <h2 className="text-2xl font-bold text-gray-800 mb-3">
             Profile Not Found
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 mb-8 text-lg">
             Unable to load your profile information.
           </p>
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => router.push("/")}
-            className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all"
+            className="px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all font-medium shadow-lg hover:shadow-xl"
           >
             Go Home
-          </button>
+          </motion.button>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 mt-20">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+    <main className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 pt-5">
+      {/* Background Decorations */}
+      <div className="absolute top-20 left-20 w-72 h-72 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" />
+      <div className="absolute bottom-20 right-20 w-72 h-72 bg-emerald-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style={{ animationDelay: "1s" }} />
+      
+      <motion.div 
+        variants={sectionVariants}
+        initial="hidden"
+        animate="visible"
+        className="relative z-10 py-12 px-4 mt-8"
+      >
+        <div className="max-w-5xl mx-auto">
+          {/* Page Header */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="w-12 h-1 bg-gradient-to-r from-transparent to-green-500" />
+              <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center">
+                <User className="w-8 h-8 text-white" />
+              </div>
+              <div className="w-12 h-1 bg-gradient-to-l from-transparent to-green-500" />
+            </div>
+            <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-4">
               My Profile
             </h1>
-            <p className="text-gray-600 mt-1">
-              Manage your account information
-            </p>
-          </div>
-          <button
-            onClick={() => refetch()}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-white transition-all"
-            title="Refresh profile"
-          >
-            <RefreshCw className="w-4 h-4" />
-            <span className="hidden sm:inline">Refresh</span>
-          </button>
-        </div>
+            <p className="text-gray-600 text-lg">Manage your account information</p>
+          </motion.div>
 
-        {/* Profile Card */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
-          {/* Header Section with Avatar */}
-          <div className="bg-gradient-to-r from-green-600 to-green-700 p-6 sm:p-8">
-            <div className="flex flex-col sm:flex-row items-center gap-6">
-              {/* Avatar */}
-              <div className="relative">
-                {user.profileUrl ? (
-                  <Image
-                    src={user.profileUrl}
-                    alt={user.fullName}
-                    width={128}
-                    height={128}
-                    className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white object-cover"
-                  />
-                ) : (
-                  <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white bg-white flex items-center justify-center">
-                    <User className="w-12 h-12 sm:w-16 sm:h-16 text-green-600" />
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Main Profile Card */}
+            <motion.div 
+              variants={cardVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-50px" }}
+              className="lg:col-span-2"
+            >
+              <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/50">
+                {/* Profile Header */}
+                <div className="bg-gradient-to-br from-green-600 to-emerald-600 p-8">
+                  <div className="flex flex-col sm:flex-row items-center gap-6">
+                    {/* Avatar */}
+                    <motion.div 
+                      whileHover={{ scale: 1.05 }}
+                      className="relative"
+                    >
+                      {user.profileUrl ? (
+                        <Image
+                          src={user.profileUrl}
+                          alt={user.fullName}
+                          width={128}
+                          height={128}
+                          className="w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-white/50 object-cover shadow-xl"
+                        />
+                      ) : (
+                        <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full border-4 border-white/50 bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-xl">
+                          <User className="w-14 h-14 sm:w-16 sm:h-16 text-white" />
+                        </div>
+                      )}
+                      {user.isOnline && (
+                        <motion.div 
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ repeat: Infinity, duration: 2 }}
+                          className="absolute bottom-2 right-2 w-6 h-6 bg-green-400 rounded-full border-3 border-white shadow-lg"
+                        />
+                      )}
+                    </motion.div>
+
+                    {/* User Info */}
+                    <div className="flex-1 text-center sm:text-left">
+                      <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2">
+                        {user.fullName}
+                      </h2>
+                      <p className="text-green-100 mb-4 text-lg">@{user.username}</p>
+                      <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
+                        <span
+                          className={`px-4 py-2 text-sm font-semibold rounded-full ${
+                            user.isActive
+                              ? "bg-green-100 text-green-700"
+                              : "bg-red-100 text-red-700"
+                          }`}
+                        >
+                          {user.isActive ? "Active" : "Inactive"}
+                        </span>
+                        <span className="px-4 py-2 text-sm font-semibold rounded-full bg-white text-green-700">
+                          {user.role}
+                        </span>
+                        {user.isEmailVerified && (
+                          <span className="px-4 py-2 text-sm font-semibold rounded-full bg-blue-100 text-blue-700 flex items-center gap-1">
+                            <CheckCircle className="w-4 h-4" />
+                            Verified
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                )}
-                {user.isOnline && (
-                  <div className="absolute bottom-2 right-2 w-4 h-4 bg-green-400 rounded-full border-2 border-white"></div>
-                )}
-              </div>
+                </div>
 
-              {/* User Info */}
-              <div className="flex-1 text-center sm:text-left">
-                <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-                  {user.fullName}
-                </h2>
-                <p className="text-green-100 mb-3">@{user.username}</p>
-                <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
-                  <span
-                    className={`px-3 py-1 text-xs font-medium rounded-full ${
-                      user.isActive
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
-                    }`}
+                {/* Account Details */}
+                <div className="p-8">
+                  <h3 className="text-2xl font-bold text-gray-800 mb-6">Account Information</h3>
+
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    {/* Email */}
+                    <motion.div 
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1 }}
+                      className="flex items-start gap-4 p-4 bg-blue-50 rounded-2xl"
+                    >
+                      <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <Mail className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-gray-500 mb-1 font-medium">Email Address</p>
+                        <p className="text-gray-800 font-semibold break-all">
+                          {user.email}
+                        </p>
+                        {user.isEmailVerified ? (
+                          <div className="flex items-center gap-1 mt-2 text-green-600 text-sm font-medium">
+                            <CheckCircle className="w-4 h-4" />
+                            <span>Verified</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1 mt-2 text-red-600 text-sm font-medium">
+                            <XCircle className="w-4 h-4" />
+                            <span>Not Verified</span>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+
+                    {/* Username */}
+                    <motion.div 
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="flex items-start gap-4 p-4 bg-purple-50 rounded-2xl"
+                    >
+                      <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <User className="w-6 h-6 text-purple-600" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-gray-500 mb-1 font-medium">Username</p>
+                        <p className="text-gray-800 font-semibold break-all">
+                          @{user.username}
+                        </p>
+                      </div>
+                    </motion.div>
+
+                    {/* Role */}
+                    <motion.div 
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.3 }}
+                      className="flex items-start gap-4 p-4 bg-orange-50 rounded-2xl"
+                    >
+                      <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <Shield className="w-6 h-6 text-orange-600" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-gray-500 mb-1 font-medium">Account Role</p>
+                        <p className="text-gray-800 font-semibold">{user.role}</p>
+                      </div>
+                    </motion.div>
+
+                    {/* Account Status */}
+                    <motion.div 
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.4 }}
+                      className={`flex items-start gap-4 p-4 rounded-2xl ${
+                        user.isActive ? "bg-green-50" : "bg-red-50"
+                      }`}
+                    >
+                      <div
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                          user.isActive ? "bg-green-100" : "bg-red-100"
+                        }`}
+                      >
+                        {user.isActive ? (
+                          <CheckCircle className="w-6 h-6 text-green-600" />
+                        ) : (
+                          <XCircle className="w-6 h-6 text-red-600" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-gray-500 mb-1 font-medium">Account Status</p>
+                        <p className="text-gray-800 font-semibold">
+                          {user.isActive ? "Active" : "Inactive"}
+                        </p>
+                      </div>
+                    </motion.div>
+
+                    {/* Last Updated */}
+                    <motion.div 
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.5 }}
+                      className="flex items-start gap-4 p-4 bg-gray-50 rounded-2xl sm:col-span-2"
+                    >
+                      <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <Calendar className="w-6 h-6 text-gray-600" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-gray-500 mb-1 font-medium">Last Updated</p>
+                        <p className="text-gray-800 font-semibold">
+                          {new Date(user.updatedAt).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })}
+                        </p>
+                      </div>
+                    </motion.div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Sidebar */}
+            <div className="space-y-8">
+              {/* Actions Card */}
+              <motion.div 
+                variants={cardVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-50px" }}
+                className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-6 border border-white/50"
+              >
+                <h3 className="text-xl font-bold text-gray-800 mb-6">Quick Actions</h3>
+                <div className="space-y-3">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => router.push("/my-bookings")}
+                    className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all font-semibold shadow-lg hover:shadow-xl"
                   >
-                    {user.isActive ? "Active" : "Inactive"}
-                  </span>
-                  <span className="px-3 py-1 text-xs font-medium rounded-full bg-white text-green-700">
-                    {user.role}
-                  </span>
-                  {user.isEmailVerified && (
-                    <span className="px-3 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-700 flex items-center gap-1">
-                      <CheckCircle className="w-3 h-3" />
-                      Verified
-                    </span>
-                  )}
+                    <Calendar className="w-5 h-5" />
+                    <span>My Bookings</span>
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleLogout}
+                    className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-red-200 text-red-600 rounded-xl hover:bg-red-50 hover:border-red-300 transition-all font-semibold"
+                  >
+                    <LogOut className="w-5 h-5" />
+                    <span>Logout</span>
+                  </motion.button>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Details Section */}
-          <div className="p-6 sm:p-8">
-            <h3 className="text-lg font-semibold text-gray-800 mb-6">
-              Account Information
-            </h3>
-
-            <div className="grid sm:grid-cols-2 gap-6">
-              {/* Email */}
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Mail className="w-5 h-5 text-blue-600" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-500 mb-1">Email Address</p>
-                  <p className="text-gray-800 font-medium break-all">
-                    {user.email}
-                  </p>
-                  {user.isEmailVerified ? (
-                    <div className="flex items-center gap-1 mt-1 text-green-600 text-xs">
-                      <CheckCircle className="w-3 h-3" />
-                      <span>Verified</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1 mt-1 text-red-600 text-xs">
-                      <XCircle className="w-3 h-3" />
-                      <span>Not Verified</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Username */}
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <User className="w-5 h-5 text-purple-600" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-500 mb-1">Username</p>
-                  <p className="text-gray-800 font-medium break-all">
-                    @{user.username}
-                  </p>
-                </div>
-              </div>
-
-              {/* Role */}
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Shield className="w-5 h-5 text-orange-600" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-500 mb-1">Account Role</p>
-                  <p className="text-gray-800 font-medium">{user.role}</p>
-                </div>
-              </div>
-
-              {/* Account Status */}
-              <div className="flex items-start gap-4">
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    user.isActive ? "bg-green-100" : "bg-red-100"
-                  }`}
-                >
-                  {user.isActive ? (
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                  ) : (
-                    <XCircle className="w-5 h-5 text-red-600" />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-500 mb-1">Account Status</p>
-                  <p className="text-gray-800 font-medium">
-                    {user.isActive ? "Active" : "Inactive"}
-                  </p>
-                </div>
-              </div>
-
-              {/* Last Updated */}
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Calendar className="w-5 h-5 text-gray-600" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-500 mb-1">Last Updated</p>
-                  <p className="text-gray-800 font-medium">
-                    {new Date(user.updatedAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </p>
-                </div>
-              </div>
-
-              {/* Account ID */}
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Shield className="w-5 h-5 text-indigo-600" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-500 mb-1">Account ID</p>
-                  <p className="text-gray-800 font-mono text-xs break-all">
-                    {user.id}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Actions Section */}
-          <div className="bg-gray-50 px-6 sm:px-8 py-4 border-t">
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button
-                onClick={() => router.push("/my-bookings")}
-                className="flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all"
-              >
-                <Calendar className="w-4 h-4" />
-                <span>My Bookings</span>
-              </button>
-              {/* <button
-                onClick={() => alert("Edit profile feature coming soon!")}
-                className="flex items-center justify-center gap-2 px-4 py-2 border border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 transition-all"
-              >
-                <Edit className="w-4 h-4" />
-                <span>Edit Profile</span>
-              </button> */}
-              <button
-                onClick={handleLogout}
-                className="flex items-center justify-center gap-2 px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-all"
-              >
-                <LogOut className="w-4 h-4" />
-                <span>Logout</span>
-              </button>
+              </motion.div>
             </div>
           </div>
         </div>
-
-        {/* Additional Info Card */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Account Statistics
-          </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <p className="text-2xl font-bold text-green-600">
-                {user.isEmailVerified ? "✓" : "✗"}
-              </p>
-              <p className="text-sm text-gray-600 mt-1">Email Status</p>
-            </div>
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <p className="text-2xl font-bold text-blue-600">
-                {user.isActive ? "✓" : "✗"}
-              </p>
-              <p className="text-sm text-gray-600 mt-1">Active Status</p>
-            </div>
-            <div className="text-center p-4 bg-purple-50 rounded-lg">
-              <p className="text-2xl font-bold text-purple-600">{user.role}</p>
-              <p className="text-sm text-gray-600 mt-1">Role</p>
-            </div>
-            <div className="text-center p-4 bg-orange-50 rounded-lg">
-              <p className="text-2xl font-bold text-orange-600">
-                {user.isOnline ? "●" : "○"}
-              </p>
-              <p className="text-sm text-gray-600 mt-1">Online Status</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Help Section */}
-        <div className="mt-6 bg-white rounded-lg shadow-md p-6 text-center">
-          <p className="text-gray-600 mb-2">Need help with your account?</p>
-          <a
-            href="mailto:support@1stchoiceproperties.com"
-            className="text-green-600 hover:text-green-700 font-medium"
-          >
-            support@1stchoiceproperties.com
-          </a>
-        </div>
-      </div>
-    </div>
+      </motion.div>
+    </main>
   );
 }

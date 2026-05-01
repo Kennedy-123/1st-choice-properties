@@ -9,6 +9,7 @@ import Loader from "./Loader";
 import Image from "next/image";
 import logo from "../app/image/logo.png";
 import { jwtDecode } from "jwt-decode";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface JwtPayload {
   id: string;
@@ -72,128 +73,125 @@ function Header() {
     setIsLoggedIn(false);
   };
 
+  const navVariants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
+  const mobileMenuVariants = {
+    hidden: {
+      opacity: 0,
+      x: "100%",
+      transition: {
+        type: "spring" as const,
+        stiffness: 300,
+        damping: 30
+      }
+    },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        type: "spring" as const,
+        stiffness: 300,
+        damping: 30
+      }
+    }
+  };
+
   return (
-    <header className="w-full bg-white shadow-sm fixed top-0 left-0 z-50">
-      <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
+    <motion.header 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      className="w-full bg-white/80 backdrop-blur-lg shadow-lg fixed top-0 left-0 z-50 border-b border-gray-100"
+    >
+      <motion.div 
+        variants={navVariants}
+        initial="hidden"
+        animate="visible"
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between"
+      >
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <div className="relative w-14 h-10">
-            <Image
-              src={logo}
-              alt="Property24 Logo"
-              fill
-              className="object-contain"
-              priority
-            />
-          </div>
-        </Link>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <Link href="/" className="flex items-center gap-2">
+            <div className="relative w-16 h-12">
+              <Image
+                src={logo}
+                alt="Property24 Logo"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+          </Link>
+        </motion.div>
 
         {/* Desktop Nav */}
-        <nav className="hidden lg:flex gap-6 text-sm text-gray-600">
-          <Link
-            href="/"
-            className={`hover:text-gray-900 ${
-              isActive("/") ? "text-green-600 font-medium" : ""
-            }`}
-            onClick={handleNavigation}
-          >
-            Home
-          </Link>
-          <Link
-            href="/about"
-            className={`hover:text-gray-900 ${
-              isActive("/about") ? "text-green-600 font-medium" : ""
-            }`}
-            onClick={handleNavigation}
-          >
-            About
-          </Link>
-          {isLoggedIn && (
-            <Link
-              href="/profile"
-              className={`hover:text-gray-900 ${
-                isActive("/profile") ? "text-green-600 font-medium" : ""
-              }`}
-              onClick={handleNavigation}
-            >
-              Profile
-            </Link>
-          )}
-          <Link
-            href="/rent"
-            className={`hover:text-gray-900 ${
-              isActive("/rent") ? "text-green-600 font-medium" : ""
-            }`}
-            onClick={handleNavigation}
-          >
-            For Rent
-          </Link>
-
-          <Link
-            href="/sale"
-            className={`hover:text-gray-900 ${
-              isActive("/sale") ? "text-green-600 font-medium" : ""
-            }`}
-            onClick={handleNavigation}
-          >
-            For Sale
-          </Link>
-          <Link
-            href="/my-bookings"
-            className={`hover:text-gray-900 ${
-              isActive("/my-bookings") ? "text-green-600 font-medium" : ""
-            }`}
-            onClick={handleNavigation}
-          >
-            Bookings
-          </Link>
-
-          <Link
-            href="/contact"
-            className={`hover:text-gray-900 ${
-              isActive("/contact") ? "text-green-600 font-medium" : ""
-            }`}
-            onClick={handleNavigation}
-          >
-            Contact
-          </Link>
-          <Link
-            href="/Favourites"
-            className={`hover:text-gray-900 ${
-              isActive("/Favourites") ? "text-green-600 font-medium" : ""
-            }`}
-            onClick={handleNavigation}
-          >
-            Favourites
-          </Link>
-
-          {userRole === "ADMIN" && (
-            <Link
-              href="/admin"
-              className={`hover:text-gray-900 ${
-                isActive("/admin") ? "text-green-600 font-medium" : ""
-              }`}
-              onClick={handleNavigation}
-            >
-              Dashboard
-            </Link>
-          )}
+        <nav className="hidden lg:flex gap-8 text-sm font-medium text-gray-600">
+          {[
+            { path: "/", label: "Home" },
+            { path: "/about", label: "About" },
+            ...(isLoggedIn ? [{ path: "/profile", label: "Profile" }] : []),
+            { path: "/rent", label: "For Rent" },
+            { path: "/sale", label: "For Sale" },
+            { path: "/my-bookings", label: "Bookings" },
+            { path: "/contact", label: "Contact" },
+            { path: "/Favourites", label: "Favourites" },
+            ...(userRole === "ADMIN" ? [{ path: "/admin", label: "Dashboard" }] : [])
+          ].map((link) => (
+            <motion.div key={link.path} variants={itemVariants}>
+              <Link
+                href={link.path}
+                className={`relative px-3 py-2 rounded-lg transition-all duration-300 ${
+                  isActive(link.path)
+                    ? "text-green-600 bg-green-50"
+                    : "hover:text-gray-900 hover:bg-gray-50"
+                }`}
+                onClick={handleNavigation}
+              >
+                {link.label}
+                {isActive(link.path) && (
+                  <motion.div
+                    layoutId="activeNav"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
+              </Link>
+            </motion.div>
+          ))}
         </nav>
 
         {/* Desktop Buttons */}
-        <div className="hidden lg:flex items-center gap-3">
+        <div className="hidden lg:flex items-center gap-4">
           {!isLoggedIn ? (
-            <Link
-              href="/login"
-              className="px-4 py-2 border border-red-500 font-bold rounded text-sm text-white bg-red-500 hover:bg-red-600 transition"
-            >
-              Login
-            </Link>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link
+                href="/login"
+                className="px-6 py-2.5 bg-gradient-to-r from-red-500 to-rose-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:from-red-600 hover:to-rose-700"
+              >
+                Login
+              </Link>
+            </motion.div>
           ) : (
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={handleLogout}
               disabled={loading}
-              className="px-4 py-2 min-w-[90px] font-bold rounded text-sm text-white bg-red-500 hover:bg-red-600 transition flex items-center justify-center"
+              className="px-6 py-2.5 min-w-[100px] bg-gradient-to-r from-red-500 to-rose-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:from-red-600 hover:to-rose-700 flex items-center justify-center"
             >
               {loading ? (
                 <span className="flex items-center justify-center">
@@ -202,140 +200,99 @@ function Header() {
               ) : (
                 "Logout"
               )}
-            </button>
+            </motion.button>
           )}
         </div>
 
         {/* Mobile Menu Button */}
-        <button
-          className="lg:hidden text-2xl text-gray-700"
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          className="lg:hidden text-2xl text-gray-700 p-2 rounded-lg hover:bg-gray-100 transition-colors"
           onClick={() => setMenuOpen(!menuOpen)}
         >
-          {menuOpen ? <FaTimes /> : <FaBars />}
-        </button>
-      </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={menuOpen ? "close" : "menu"}
+              initial={{ rotate: -90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: 90, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              {menuOpen ? <FaTimes /> : <FaBars />}
+            </motion.div>
+          </AnimatePresence>
+        </motion.button>
+      </motion.div>
 
       {/* Mobile Dropdown Menu */}
-      {menuOpen && (
-        <div className="lg:hidden bg-white border-t border-gray-200 shadow-md">
-          <nav className="flex flex-col p-4 space-y-3 text-center text-gray-700">
-            <Link
-              href="/"
-              className={`hover:text-gray-900 ${
-                isActive("/") ? "text-green-600 font-medium" : ""
-              }`}
-              onClick={() => setMenuOpen(false)}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            variants={mobileMenuVariants}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            className="lg:hidden bg-white/95 backdrop-blur-lg border-t border-gray-200 shadow-2xl absolute top-full left-0 right-0"
+          >
+            <motion.nav 
+              initial="hidden"
+              animate="visible"
+              variants={navVariants}
+              className="flex flex-col p-6 space-y-2"
             >
-              Home
-            </Link>
+              {[
+                { path: "/", label: "Home" },
+                { path: "/about", label: "About" },
+                ...(isLoggedIn ? [{ path: "/profile", label: "Profile" }] : []),
+                { path: "/rent", label: "For Rent" },
+                { path: "/sale", label: "For Sale" },
+                { path: "/my-bookings", label: "Bookings" },
+                { path: "/contact", label: "Contact" },
+                { path: "/Favourites", label: "Favourites" },
+                ...(userRole === "ADMIN" ? [{ path: "/admin", label: "Dashboard" }] : [])
+              ].map((link) => (
+                <motion.div key={link.path} variants={itemVariants}>
+                  <Link
+                    href={link.path}
+                    className={`block px-4 py-3 rounded-lg font-medium transition-all duration-300 ${
+                      isActive(link.path)
+                        ? "text-green-600 bg-green-50"
+                        : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                    }`}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                </motion.div>
+              ))}
 
-            <Link
-              href="/about"
-              className={`hover:text-gray-900 ${
-                isActive("/about") ? "text-green-600 font-medium" : ""
-              }`}
-              onClick={() => setMenuOpen(false)}
-            >
-              About
-            </Link>
-            {isLoggedIn && (
-              <Link
-                href="/profile"
-                className={`hover:text-gray-900 ${
-                  isActive("/profile") ? "text-green-600 font-medium" : ""
-                }`}
-                onClick={() => setMenuOpen(false)}
-              >
-                Profile
-              </Link>
-            )}
-
-            <Link
-              href="/rent"
-              className={`hover:text-gray-900 ${
-                isActive("/rent") ? "text-green-600 font-medium" : ""
-              }`}
-              onClick={() => setMenuOpen(false)}
-            >
-              For Rent
-            </Link>
-            <Link
-              href="/sale"
-              className={`hover:text-gray-900 ${
-                isActive("/sale") ? "text-green-600 font-medium" : ""
-              }`}
-              onClick={() => setMenuOpen(false)}
-            >
-              For Sale
-            </Link>
-            <Link
-              href="/my-bookings"
-              className={`hover:text-gray-900 ${
-                isActive("/my-bookings") ? "text-green-600 font-medium" : ""
-              }`}
-              onClick={() => setMenuOpen(false)}
-            >
-              Bookings
-            </Link>
-
-            <Link
-              href="/contact"
-              className={`hover:text-gray-900 ${
-                isActive("/contact") ? "text-green-600 font-medium" : ""
-              }`}
-              onClick={() => setMenuOpen(false)}
-            >
-              Contact
-            </Link>
-
-            <Link
-              href="/Favourites"
-              className={`hover:text-gray-900 ${
-                isActive("/Favourites") ? "text-green-600 font-medium" : ""
-              }`}
-              onClick={() => setMenuOpen(false)}
-            >
-              Favourites
-            </Link>
-
-            {userRole === "ADMIN" && (
-              <Link
-                href="/admin"
-                className={`hover:text-gray-900 ${
-                  isActive("/admin") ? "text-green-600 font-medium" : ""
-                }`}
-                onClick={() => setMenuOpen(false)}
-              >
-                Dashboard
-              </Link>
-            )}
-
-            <hr className="border-gray-200" />
-
-            {!isLoggedIn ? (
-              <Link
-                href="/login"
-                className="px-4 py-2 border font-bold rounded text-sm text-center bg-red-500 text-white hover:bg-red-600 transition"
-                onClick={() => setMenuOpen(false)}
-              >
-                Login
-              </Link>
-            ) : (
-              <button
-                onClick={() => {
-                  handleLogout();
-                  setMenuOpen(false);
-                }}
-                disabled={loading}
-                className="px-4 py-2 border font-bold rounded text-sm text-center bg-red-500 text-white hover:bg-red-600 transition flex items-center justify-center min-w-[90px]"
-              >
-                {loading ? <Loader color="border-white" /> : "Logout"}
-              </button>
-            )}
-          </nav>
-        </div>
-      )}
-    </header>
+              <motion.div variants={itemVariants} className="pt-4">
+                {!isLoggedIn ? (
+                  <Link
+                    href="/login"
+                    className="block px-4 py-3 text-center bg-gradient-to-r from-red-500 to-rose-600 text-white font-semibold rounded-full"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                ) : (
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setMenuOpen(false);
+                    }}
+                    disabled={loading}
+                    className="w-full px-4 py-3 bg-gradient-to-r from-red-500 to-rose-600 text-white font-semibold rounded-full flex items-center justify-center"
+                  >
+                    {loading ? <Loader color="border-white" /> : "Logout"}
+                  </button>
+                )}
+              </motion.div>
+            </motion.nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.header>
   );
 }
 

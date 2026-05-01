@@ -45,7 +45,7 @@ export function useApartmentsForSale(page: number = 1, limit: number = 10) {
     try {
       setLoading(true);
       const res = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/apartments?page=${page}&limit=${300}`
+        `${process.env.NEXT_PUBLIC_API_URL}/apartments?page=${page}&limit=${100}`
       );
 
       // Access the nested structure: res.data.data.data
