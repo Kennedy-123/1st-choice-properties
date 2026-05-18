@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { AlertCircle, Mail, ArrowLeft, ExternalLink } from "lucide-react";
+import { AlertCircle, Mail, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 
 const sectionVariants = {
@@ -170,7 +170,7 @@ export default function DeleteAccountPage() {
                 </motion.div>
 
                 {/* Email Section */}
-                <motion.div
+                {/* <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
@@ -187,7 +187,7 @@ export default function DeleteAccountPage() {
                       </span>
                     </div>
                   </div>
-                </motion.div>
+                </motion.div> */}
               </div>
             </div>
           </motion.div>
