@@ -2,7 +2,7 @@ import React from "react";
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-50 p-8">
+    <main className="min-h-screen flex items-center justify-center bg-gray-50 p-8 mt-16">
       <div className="w-full max-w-3xl bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
         <h1 className="text-3xl font-bold mb-4">Privacy Policy</h1>
         <p className="text-gray-700 dark:text-gray-300 mb-6">

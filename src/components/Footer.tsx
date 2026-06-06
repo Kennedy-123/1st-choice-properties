@@ -58,6 +58,10 @@ function Footer() {
                 <li key={link.path}>
                   <Link
                     href={link.path}
+                    onClick={() =>
+                      typeof window !== "undefined" &&
+                      window.scrollTo({ top: 0, behavior: "smooth" })
+                    }
                     className={`text-sm transition-all duration-300 hover:text-green-400 hover:translate-x-1 inline-block ${
                       isActive(link.path)
                         ? "text-green-400 font-medium"
@@ -111,6 +115,10 @@ function Footer() {
             <div className="flex items-center gap-6">
               <Link
                 href="/chat"
+                onClick={() =>
+                  typeof window !== "undefined" &&
+                  window.scrollTo({ top: 0, behavior: "smooth" })
+                }
                 className={`text-sm transition-all duration-300 hover:text-green-400 ${
                   isActive("/chat")
                     ? "text-green-400 font-medium"
@@ -121,6 +129,10 @@ function Footer() {
               </Link>
               <Link
                 href="/terms"
+                onClick={() =>
+                  typeof window !== "undefined" &&
+                  window.scrollTo({ top: 0, behavior: "smooth" })
+                }
                 className={`text-sm transition-all duration-300 hover:text-green-400 ${
                   isActive("/terms")
                     ? "text-green-400 font-medium"
@@ -131,6 +143,10 @@ function Footer() {
               </Link>
               <Link
                 href="/privacy"
+                onClick={() =>
+                  typeof window !== "undefined" &&
+                  window.scrollTo({ top: 0, behavior: "smooth" })
+                }
                 className={`text-sm transition-all duration-300 hover:text-green-400 ${
                   isActive("/privacy")
                     ? "text-green-400 font-medium"
