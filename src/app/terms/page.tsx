@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function TermsPage() {
   return (
-    <div className="max-w-5xl mx-auto mt-10 px-4 sm:px-6 lg:px-8 py-8 sm:py-12 mt-16">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 mt-16">
       <div className="prose max-w-none text-gray-700">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
           Terms and Conditions
