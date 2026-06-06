@@ -129,6 +129,16 @@ function Footer() {
               >
                 Terms & Conditions
               </Link>
+              <Link
+                href="/privacy"
+                className={`text-sm transition-all duration-300 hover:text-green-400 ${
+                  isActive("/privacy")
+                    ? "text-green-400 font-medium"
+                    : "text-gray-400"
+                }`}
+              >
+                Privacy Policy
+              </Link>
             </div>
           </div>
         </div>
