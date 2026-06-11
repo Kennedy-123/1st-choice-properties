@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { 
   ArrowLeft, 
   Upload, 
-  X, 
   Plus, 
   Trash2, 
   Loader2, 
@@ -21,6 +20,7 @@ import {
 import Image from "next/image";
 import api from "@/lib/axiosInstance";
 import { useAdminApartments } from "@/hooks/useAdminApartments";
+import { isAuthenticated } from "@/utils/isAuthenticated";
 
 interface Category {
   id: string;
@@ -99,6 +99,15 @@ export default function CreateApartmentPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Use shared util to verify authentication before submitting
+    if (!isAuthenticated()) {
+      try {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+      } catch {}
+      router.push("/login");
+      return;
+    }
     
     // Simple validation
     if (!formData.title || !formData.description || !formData.location || !formData.price || !formData.apartmentCategoryId) {
@@ -169,13 +178,13 @@ export default function CreateApartmentPage() {
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
               <h2 className="text-lg font-semibold text-slate-800 flex items-center">
-                <Building2 className="w-5 h-5 mr-2 text-indigo-500" />
+                <Building2 className="w-5 h-5 mr-2 text-green-400" />
                 Property Details
               </h2>
             </div>
             <div className="p-6 space-y-6">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1 flex items-center">
+                <label className="block text-sm font-medium text-slate-700 mb-1 items-center">
                   <FileText className="w-4 h-4 mr-2 text-slate-400" />
                   Title
                 </label>
@@ -191,7 +200,7 @@ export default function CreateApartmentPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1 flex items-center">
+                <label className="block text-sm font-medium text-slate-700 mb-1 items-center">
                   <FileText className="w-4 h-4 mr-2 text-slate-400" />
                   Description
                 </label>
@@ -208,7 +217,7 @@ export default function CreateApartmentPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1 flex items-center">
+                  <label className="block text-sm font-medium text-slate-700 mb-1 items-center">
                     <MapPin className="w-4 h-4 mr-2 text-slate-400" />
                     Location
                   </label>
@@ -224,7 +233,7 @@ export default function CreateApartmentPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1 flex items-center">
+                  <label className="block text-sm font-medium text-slate-700 mb-1 items-center">
                     <Tag className="w-4 h-4 mr-2 text-slate-400" />
                     Category
                   </label>
@@ -245,7 +254,7 @@ export default function CreateApartmentPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1 flex items-center">
+                  <label className="block text-sm font-medium text-slate-700 mb-1 items-center">
                     <DollarSign className="w-4 h-4 mr-2 text-slate-400" />
                     Price
                   </label>
@@ -264,7 +273,7 @@ export default function CreateApartmentPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1 flex items-center">
+                  <label className="block text-sm font-medium text-slate-700 mb-1 items-center">
                     <CreditCard className="w-4 h-4 mr-2 text-slate-400" />
                     Payment Plan
                   </label>
@@ -272,14 +281,14 @@ export default function CreateApartmentPage() {
                     <button
                       type="button"
                       onClick={() => setFormData(p => ({ ...p, paymentPlan: "ANNUAL" }))}
-                      className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${formData.paymentPlan === "ANNUAL" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+                      className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${formData.paymentPlan === "ANNUAL" ? "bg-white text-green-400 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
                     >
                       ANNUAL
                     </button>
                     <button
                       type="button"
                       onClick={() => setFormData(p => ({ ...p, paymentPlan: "MONTHLY" }))}
-                      className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${formData.paymentPlan === "MONTHLY" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+                      className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${formData.paymentPlan === "MONTHLY" ? "bg-white text-green-400 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
                     >
                       MONTHLY
                     </button>
@@ -293,13 +302,13 @@ export default function CreateApartmentPage() {
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-slate-800 flex items-center">
-                <Plus className="w-5 h-5 mr-2 text-sky-500" />
+                <Plus className="w-5 h-5 mr-2 text-green-400" />
                 Features & Amenities
               </h2>
               <button
                 type="button"
                 onClick={addFeature}
-                className="text-xs font-bold text-indigo-600 uppercase tracking-wider hover:text-indigo-700 transition-colors"
+                className="text-xs font-bold text-green-400 uppercase tracking-wider hover:text-green-500 transition-colors"
               >
                 + Add Feature
               </button>
@@ -332,12 +341,12 @@ export default function CreateApartmentPage() {
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
               <h2 className="text-lg font-semibold text-slate-800 flex items-center">
-                <Upload className="w-5 h-5 mr-2 text-amber-500" />
+                <Upload className="w-5 h-5 mr-2 text-green-400" />
                 Gallery & Media
               </h2>
             </div>
             <div className="p-6">
-              <div className="border-2 border-dashed border-slate-200 rounded-2xl p-8 transition-colors hover:border-indigo-300 bg-slate-50 group">
+              <div className="border-2 border-dashed border-slate-200 rounded-2xl p-8 transition-colors hover:border-green-300 bg-slate-50 group">
                 <input
                   type="file"
                   multiple
@@ -351,7 +360,7 @@ export default function CreateApartmentPage() {
                   className="flex flex-col items-center justify-center cursor-pointer"
                 >
                   <div className="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform border border-slate-100">
-                    <Upload className="w-6 h-6 text-indigo-500" />
+                    <Upload className="w-6 h-6 text-green-400" />
                   </div>
                   <p className="text-sm font-semibold text-slate-900">Click to upload or drag and drop</p>
                   <p className="text-xs text-slate-500 mt-1">Images or videos up to 10MB each</p>
@@ -395,7 +404,7 @@ export default function CreateApartmentPage() {
             <button
               type="submit"
               disabled={creating}
-              className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-2xl shadow-lg shadow-indigo-200 transition-all active:scale-[0.98] disabled:opacity-50 disabled:shadow-none flex items-center justify-center"
+              className="flex-1 bg-green-400 hover:bg-green-500 text-white font-bold py-4 px-6 rounded-2xl shadow-lg shadow-green-200 transition-all active:scale-[0.98] disabled:opacity-50 disabled:shadow-none flex items-center justify-center"
             >
               {creating ? (
                 <>
